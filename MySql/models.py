@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double,TIMESTAMP
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, TIMESTAMP
 from sqlalchemy.orm import relationship
 
 from .database import Base
+
 
 class News(Base):
     __tablename__ = "news"
@@ -11,7 +12,6 @@ class News(Base):
     content = Column(String(5000))
     is_active = Column(Boolean, default=True)
     created_date = Column(DateTime)
-
 
 
 class Role(Base):
@@ -48,7 +48,7 @@ class Company(Base):
     users = relationship("User", back_populates="company")
     tickets = relationship("Ticket", back_populates="company")
 
-    routes = relationship("route",back_populates="company")
+    routes = relationship("route", back_populates="company")
 
 
 class Ticket(Base):
@@ -59,13 +59,11 @@ class Ticket(Base):
     departure_date_time = Column(DateTime)
     passenger_id = Column(Integer, ForeignKey("users.id"))
     company_id = Column(Integer, ForeignKey("routeday.company_id"))
-    day_name = Column(String(10),ForeignKey("routeday.day_name"))
+    day_name = Column(String(10), ForeignKey("routeday.day_name"))
     route_id = Column(Integer, ForeignKey("routeday.route_id"))
 
     routeday = relationship("routeday", back_populates="tickets")
     user = relationship("User", back_populates="tickets")
-
-
 
 
 class Route(Base):
@@ -78,8 +76,9 @@ class Route(Base):
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
 
     tickets = relationship("Ticket", back_populates="route")
-    days = relationship("day",secondary='routeday',back_populates='routes')
-    stations = relationship("station",secondary='routestation',back_populates='routes')
+    days = relationship("day", secondary='routeday', back_populates='routes')
+    stations = relationship(
+        "station", secondary='routestation', back_populates='routes')
 # Treba srediti vise u vise vezu izmedju route i station
 
 
@@ -92,14 +91,15 @@ class Station(Base):
     country_name = Column(String(25), ForeignKey("country.country_name"))
 
     city = relationship("City", back_populates="stations")
-    routes = relationship("route",secondary='routestation',back_populates="stations")
+    routes = relationship("route", secondary='routestation',
+                          back_populates="stations")
 
 
 class City(Base):
     __tablename__ = "city"
 
     city_name = Column(String(20), primary_key=True)
-    country_name = Column(String(20),ForeignKey("country.country_name"))
+    country_name = Column(String(20), ForeignKey("country.country_name"))
     stations = relationship("Station", back_populates="city")
     country = relationship("Country", back_populates="cities")
 
@@ -111,29 +111,27 @@ class Country(Base):
 
     cities = relationship("City", back_populates="country")
 
+
 class Day(Base):
     __tablename__ = "day"
 
-    day_name = Column(String(10),primary_key=True,index = True)
-    routes = relationship('Route',secondary='routeday',back_populates='day')
+    day_name = Column(String(10), primary_key=True, index=True)
+    routes = relationship('Route', secondary='routeday', back_populates='day')
+
 
 class RouteDay(Base):
     __tablename__ = "routeday"
     day_name = Column(String(10), ForeignKey("day.day_name"), primary_key=True)
     route_id = Column(Integer, ForeignKey("route.id"), primary_key=True)
-    company_id = Column(Integer,ForeignKey("company.id"),primary_key=True)
+    company_id = Column(Integer, ForeignKey("company.id"), primary_key=True)
 
-    company = relationship("company",back_populates="routes")
-    tickets = relationship("ticket",back_populates="routeday")
+    company = relationship("company", back_populates="routes")
+    tickets = relationship("ticket", back_populates="routeday")
+
 
 class RouteStation(Base):
     __tablename__ = "routestation"
-    route_id = Column(Integer,ForeignKey("route.id"),primary_key=True)
-    station_id = Column(Integer,ForeignKey("station.id"),primary_key=True)
-    departure_time = Column(TIMESTAMP)
-    arrival_time = Column(TIMESTAMP)
-    
-
-
-
-    
+    route_id = Column(Integer, ForeignKey("route.id"), primary_key=True)
+    station_id = Column(Integer, ForeignKey("station.id"), primary_key=True)
+    departure_time = Column(DateTime)
+    arrival_time = Column(DateTime)
