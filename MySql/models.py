@@ -1,8 +1,25 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, TIMESTAMP
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
+
+RouteDayAssociation = Table(
+    'routeday',
+    Base.metadata,
+    Column('day_name', String(10), ForeignKey('day.day_name'), primary_key=True),
+    Column('route_id', Integer, ForeignKey('route.id'), primary_key=True),
+    Column('company_id', Integer, ForeignKey('company.id'), primary_key=True)
+)
+
+RouteStationAssociation = Table(
+    'routestation',
+    Base.metadata,
+    Column('route_id', Integer, ForeignKey('route.id'), primary_key=True),
+    Column('station_id', Integer, ForeignKey('station.id'), primary_key=True),
+    Column('departure_time', DateTime),
+    Column('arrival_time', DateTime)
+)
 
 class News(Base):
     __tablename__ = "news"
@@ -46,6 +63,10 @@ class Company(Base):
     company_name = Column(String(25))
 
     users = relationship("User", back_populates="company")
+<<<<<<< HEAD
+=======
+    routes = relationship("RouteDay", back_populates="company")
+>>>>>>> 9e7bbfbf3e6730993267b6d438f180d5fc29d969
 
 
 class Ticket(Base):
@@ -59,7 +80,18 @@ class Ticket(Base):
     day_name = Column(String(10), ForeignKey("routeday.day_name"))
     route_id = Column(Integer, ForeignKey("routeday.route_id"))
 
+<<<<<<< HEAD
     routeday = relationship("RouteDay", back_populates="tickets")
+=======
+    routeday = relationship(
+        "RouteDay",
+        primaryjoin="and_(Ticket.company_id == RouteDay.company_id, "
+                    "Ticket.day_name == RouteDay.day_name, "
+                    "Ticket.route_id == RouteDay.route_id)",
+        foreign_keys="[Ticket.company_id, Ticket.day_name, Ticket.route_id]",
+        back_populates="tickets"
+    )
+>>>>>>> 9e7bbfbf3e6730993267b6d438f180d5fc29d969
     user = relationship("User", back_populates="tickets")
 
 
@@ -72,11 +104,17 @@ class Route(Base):
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
 
+<<<<<<< HEAD
     tickets = relationship("Ticket", back_populates="routeday")
     days = relationship("Day", secondary='routeday', back_populates='routes')
     stations = relationship(
         "Station", secondary='routestation', back_populates='routes')
 # Treba srediti vise u vise vezu izmedju route i station
+=======
+    days = relationship("Day", secondary=RouteDayAssociation, back_populates='routes')
+    stations = relationship(
+        "Station", secondary=RouteStationAssociation, back_populates='routes')
+>>>>>>> 9e7bbfbf3e6730993267b6d438f180d5fc29d969
 
 
 class Station(Base):
@@ -88,7 +126,11 @@ class Station(Base):
     country_name = Column(String(25), ForeignKey("country.country_name"))
 
     city = relationship("City", back_populates="stations")
+<<<<<<< HEAD
     routes = relationship("Route", secondary='routestation',
+=======
+    routes = relationship("Route", secondary=RouteStationAssociation,
+>>>>>>> 9e7bbfbf3e6730993267b6d438f180d5fc29d969
                           back_populates="stations")
 
 
@@ -113,22 +155,26 @@ class Day(Base):
     __tablename__ = "day"
 
     day_name = Column(String(10), primary_key=True, index=True)
-    routes = relationship('Route', secondary='routeday', back_populates='day')
+    routes = relationship('Route', secondary=RouteDayAssociation, back_populates='days')
 
 
 class RouteDay(Base):
-    __tablename__ = "routeday"
-    day_name = Column(String(10), ForeignKey("day.day_name"), primary_key=True)
-    route_id = Column(Integer, ForeignKey("route.id"), primary_key=True)
-    company_id = Column(Integer, ForeignKey("company.id"), primary_key=True)
+    __table__ = RouteDayAssociation
 
     company = relationship("Company", back_populates="routes")
+<<<<<<< HEAD
     tickets = relationship("Ticket", back_populates="routeday")
+=======
+    tickets = relationship(
+        "Ticket",
+        primaryjoin="and_(RouteDay.company_id == Ticket.company_id, "
+                    "RouteDay.day_name == Ticket.day_name, "
+                    "RouteDay.route_id == Ticket.route_id)",
+        foreign_keys="[Ticket.company_id, Ticket.day_name, Ticket.route_id]",
+        back_populates="routeday"
+    )
+>>>>>>> 9e7bbfbf3e6730993267b6d438f180d5fc29d969
 
 
 class RouteStation(Base):
-    __tablename__ = "routestation"
-    route_id = Column(Integer, ForeignKey("route.id"), primary_key=True)
-    station_id = Column(Integer, ForeignKey("station.id"), primary_key=True)
-    departure_time = Column(DateTime)
-    arrival_time = Column(DateTime)
+    __table__ = RouteStationAssociation
