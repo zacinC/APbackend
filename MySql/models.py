@@ -46,9 +46,6 @@ class Company(Base):
     company_name = Column(String(25))
 
     users = relationship("User", back_populates="company")
-    tickets = relationship("Ticket", back_populates="company")
-
-    routes = relationship("route", back_populates="company")
 
 
 class Ticket(Base):
@@ -62,7 +59,7 @@ class Ticket(Base):
     day_name = Column(String(10), ForeignKey("routeday.day_name"))
     route_id = Column(Integer, ForeignKey("routeday.route_id"))
 
-    routeday = relationship("routeday", back_populates="tickets")
+    routeday = relationship("RouteDay", back_populates="tickets")
     user = relationship("User", back_populates="tickets")
 
 
@@ -75,10 +72,10 @@ class Route(Base):
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
 
-    tickets = relationship("Ticket", back_populates="route")
-    days = relationship("day", secondary='routeday', back_populates='routes')
+    tickets = relationship("Ticket", back_populates="routeday")
+    days = relationship("Day", secondary='routeday', back_populates='routes')
     stations = relationship(
-        "station", secondary='routestation', back_populates='routes')
+        "Station", secondary='routestation', back_populates='routes')
 # Treba srediti vise u vise vezu izmedju route i station
 
 
@@ -91,7 +88,7 @@ class Station(Base):
     country_name = Column(String(25), ForeignKey("country.country_name"))
 
     city = relationship("City", back_populates="stations")
-    routes = relationship("route", secondary='routestation',
+    routes = relationship("Route", secondary='routestation',
                           back_populates="stations")
 
 
@@ -125,8 +122,8 @@ class RouteDay(Base):
     route_id = Column(Integer, ForeignKey("route.id"), primary_key=True)
     company_id = Column(Integer, ForeignKey("company.id"), primary_key=True)
 
-    company = relationship("company", back_populates="routes")
-    tickets = relationship("ticket", back_populates="routeday")
+    company = relationship("Company", back_populates="routes")
+    tickets = relationship("Ticket", back_populates="routeday")
 
 
 class RouteStation(Base):
