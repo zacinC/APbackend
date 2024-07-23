@@ -34,7 +34,6 @@ class RoleCreate(RoleBase):
 
 
 class Role(RoleBase):
-    users: List['User'] = []
 
     class Config:
         orm_mode: True
@@ -58,8 +57,7 @@ class User(UserBase):
     role_type: str
     company_id: Optional[int] = None
     role: Optional[Role] = None
-    company: Optional['Company'] = None
-    tickets: List['Ticket'] = []
+   
 
     class Config:
         orm_mode: True
@@ -78,8 +76,6 @@ class CompanyCreate(CompanyBase):
 class Company(CompanyBase):
     id: int
     users: List[User] = []
-    tickets: List['Ticket'] = []
-    routes: List['Route'] = []
 
     class Config:
         orm_mode: True
@@ -105,7 +101,6 @@ class Ticket(TicketBase):
     company_id: int
     day_name: str
     route_id: int
-    routeday: Optional['RouteDay'] = None
     user: Optional[User] = None
 
     class Config:
@@ -129,7 +124,6 @@ class Route(RouteBase):
     departure_station_id: int
     arrival_station_id: int
     tickets: List[Ticket] = []
-    days: List['Day'] = []
     stations: List['Station'] = []
 
     class Config:
