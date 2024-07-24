@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, time
 
 # News Schema
 
@@ -57,7 +57,6 @@ class User(UserBase):
     role_type: str
     company_id: Optional[int] = None
     role: Optional[Role] = None
-   
 
     class Config:
         orm_mode: True
@@ -110,8 +109,8 @@ class Ticket(TicketBase):
 
 
 class RouteBase(BaseModel):
-    departure_time: datetime
-    arrival_time: datetime
+    departure_time: time
+    arrival_time: time
 
 
 class RouteCreate(RouteBase):
@@ -134,6 +133,7 @@ class Route(RouteBase):
 
 class StationBase(BaseModel):
     address: str
+    phone_number: Optional[str] = None
 
 
 class StationCreate(StationBase):
@@ -230,8 +230,8 @@ class RouteDay(RouteDayBase):
 class RouteStationBase(BaseModel):
     route_id: int
     station_id: int
-    departure_time: datetime
-    arrival_time: datetime
+    departure_time: time
+    arrival_time: time
 
 
 class RouteStationCreate(RouteStationBase):

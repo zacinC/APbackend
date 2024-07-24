@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table, Time
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -18,8 +18,8 @@ RouteStationAssociation = Table(
     Base.metadata,
     Column('route_id', Integer, ForeignKey('route.id'), primary_key=True),
     Column('station_id', Integer, ForeignKey('station.id'), primary_key=True),
-    Column('departure_time', DateTime),
-    Column('arrival_time', DateTime)
+    Column('departure_time', Time, nullable=True),
+    Column('arrival_time', Time, nullable=True)
 )
 
 
@@ -94,8 +94,8 @@ class Route(Base):
     __tablename__ = "route"
 
     id = Column(Integer, primary_key=True)
-    departure_time = Column(DateTime)
-    arrival_time = Column(DateTime)
+    departure_time = Column(Time)
+    arrival_time = Column(Time)
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
 
@@ -109,7 +109,8 @@ class Station(Base):
     __tablename__ = "station"
 
     id = Column(Integer, primary_key=True)
-    address = Column(String(25))
+    phone_number = Column(String(25))
+    address = Column(String(50))
     city_name = Column(String(25), ForeignKey("city.city_name"))
     country_name = Column(String(25), ForeignKey("country.country_name"))
 
