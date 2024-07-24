@@ -16,8 +16,9 @@ RouteDayAssociation = Table(
 RouteStationAssociation = Table(
     'routestation',
     Base.metadata,
-    Column('route_id', Integer, ForeignKey('route.id'), primary_key=True),
-    Column('station_id', Integer, ForeignKey('station.id'), primary_key=True),
+    Column('id',Integer,primary_key = True),
+    Column('route_id', Integer, ForeignKey('route.id')),
+    Column('station_id', Integer, ForeignKey('station.id')),
     Column('departure_time', Time, nullable=True),
     Column('arrival_time', Time, nullable=True)
 )
