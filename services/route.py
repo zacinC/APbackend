@@ -7,7 +7,37 @@ import datetime
 
 
 def get_routes(db: Session):
-    return db.query(models.Route).all()
+    routes_filtered = db.query(models.RouteDay.route_id,models.Company.company_name,models.RouteDay.day_name,models.RouteStationAssociation,models.Station)\
+    .filter(models.Company.id == models.RouteDay.company_id,
+            models.RouteStationAssociation.columns.get("route_id") == models.RouteDay.route_id,
+            models.Station.id ==  models.RouteStationAssociation.columns.get("station_id")
+            ).all()
+   
+    grouped_results = {}
+
+
+    for item in routes_filtered:
+        route_id = item[0]
+        if route_id not in grouped_results:
+            grouped_results[route_id] = {
+                "company_name":item[1],
+                "stations": [],
+            }
+
+        grouped_results[route_id]["stations"].append({"station":item[8],
+                                                        "arrival_time":item[7],
+                                                        "departure_time":item[6]                                                 
+                                                        })
+
+    final_list = []
+
+    for key,value in grouped_results.items():
+        final_list.append(value)
+        
+
+    print(final_list)
+
+    return final_list
 
 def get_routes_filtered_by_company(db: Session, companyname: str):
     routes_filtered = db.query(models.RouteDay.route_id,models.Company.company_name,models.RouteDay.day_name,models.RouteStationAssociation,models.Station)\
@@ -120,7 +150,6 @@ def delete_routeID(db: Session, id: int,day_name:str):
 
 
 def create_route(days:List[models.Day],stations:List,company_id:int,db:Session): 
-    print("arfkmsfdkfdskfsdkfsdkfsdkfsdkfdskfdskdfskfsdkfsdkfsdkfsdk",stations)
     startStation = stations[0]
     endStation =  stations[-1]
 

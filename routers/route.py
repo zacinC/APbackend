@@ -12,10 +12,6 @@ from datetime import datetime
 route_router = APIRouter()
 
 
-@route_router.get("/routes/", response_model=List[schemas.Route])
-def read_routes(db: Session = Depends(get_db)):
-    return get_routes(db)
-
 @route_router.get("/routes", response_model=List[schemas.RouteResponse])
 def read_routes_filtered(companyname: Optional[str] = None, db: Session = Depends(get_db)):
     if companyname:
