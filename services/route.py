@@ -133,20 +133,19 @@ def delete_routeID(db: Session, id: int,day_name:str):
     if not day_name:
         route:models.Route = db.query(models.Route).filter(models.Route.id == id).first()
 
-        
     else:
         route:models.Route = db.query(models.RouteDay).filter(models.RouteDay.route_id == id,models.RouteDay.day_name == models.Day.day_name).first()
 
-        if not route:
-            raise HTTPException(status_code=404, detail=f'Route with ID: {id} not found!')
+    if not route:
+        raise HTTPException(status_code=404, detail=f'Route with ID: {id} not found!')
 
-        try:
-            db.delete(route)
-            db.commit()
-            return {"detail": "Route deleted successfully"}
-        except Exception as e:
-            db.rollback()
-            raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    try:
+        db.delete(route)
+        db.commit()
+        return {"detail": "Route deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
 def create_route(days:List[models.Day],stations:List,company_id:int,db:Session): 
@@ -175,4 +174,7 @@ def create_route(days:List[models.Day],stations:List,company_id:int,db:Session):
     
     return new_route
 
+def update(id:int,days:List[models.Day],stations:List,company_id:int,db:Session):
+    delete_routeID(db,id,None)
+    create_route(days,stations,company_id,db)
 

@@ -5,7 +5,7 @@ from fastapi import Depends
 from fastapi import APIRouter,status
 
 from ..MySql.database import get_db
-from ..services.route import get_routes,get_routes_filtered,delete_routeID,create_route,get_routes_filtered_by_company
+from ..services.route import get_routes,get_routes_filtered,delete_routeID,create_route,get_routes_filtered_by_company,update
 from ..schemas import schemas
 from datetime import datetime
 
@@ -38,6 +38,11 @@ def delete_route(id:int,day_name:Optional[str] = None,db:Session = Depends(get_d
 @route_router.post("/routes",response_model = schemas.Route,status_code = status.HTTP_201_CREATED)
 def add_route(info:schemas.RouteCreateRequest,db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id,db)
+
+@route_router.put("/routes/{id}",status_code=status.HTTP_201_CREATED)
+def update_route(id,info:schemas.RouteCreateRequest,db: Session = Depends(get_db)):
+    return update(id,info.days, info.stations, info.company_id,db)
+
 
 
 
