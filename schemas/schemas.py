@@ -58,6 +58,7 @@ class User(UserBase):
     role_type: str
     company_id: Optional[int] = None
     role: Optional[Role] = None
+    tickets: List['Ticket']
 
     class Config:
         orm_mode: True
@@ -101,7 +102,6 @@ class Ticket(TicketBase):
     company_id: int
     day_name: str
     route_id: int
-    user: Optional[User] = None
 
     class Config:
         orm_mode: True
