@@ -12,13 +12,13 @@ from datetime import datetime
 route_router = APIRouter()
 
 
-@route_router.get("/routes", response_model=List[schemas.RouteResponse])
+@route_router.get("/routes", response_model=List[schemas.RouteResponse],tags = ["route"])
 def read_routes_filtered(companyname: Optional[str] = None, db: Session = Depends(get_db)):
     if companyname:
         return get_routes_filtered_by_company(db, companyname)
     return get_routes(db)
 
-@route_router.get("/routes/{startCity}-{startCountry}/{endCity}-{endCountry}/{date}",response_model = List[schemas.RouteResponse])
+@route_router.get("/routes/{startCity}-{startCountry}/{endCity}-{endCountry}/{date}",response_model = List[schemas.RouteResponse],tags = ["route"])
 def read_routes_filtered(
     startCity: str, 
     startCountry: str, 
@@ -30,16 +30,16 @@ def read_routes_filtered(
     all_routes_filtered = get_routes_filtered(db,startCity,startCountry,endCity,endCountry,date)
     return all_routes_filtered
 
-@route_router.delete("/routes/{id}",status_code=status.HTTP_204_NO_CONTENT)
+@route_router.delete("/routes/{id}",status_code=status.HTTP_204_NO_CONTENT,tags = ["route"])
 def delete_route(id:int,day_name:Optional[str] = None,db:Session = Depends(get_db)):
 
     return delete_routeID(db,id,day_name)
 
-@route_router.post("/routes",response_model = schemas.Route,status_code = status.HTTP_201_CREATED)
+@route_router.post("/routes",response_model = schemas.Route,status_code = status.HTTP_201_CREATED,tags = ["route"])
 def add_route(info:schemas.RouteCreateRequest,db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id,db)
 
-@route_router.put("/routes/{id}",status_code=status.HTTP_201_CREATED)
+@route_router.put("/routes/{id}",status_code=status.HTTP_201_CREATED,tags = ["route"])
 def update_route(id,info:schemas.RouteCreateRequest,db: Session = Depends(get_db)):
     return update(id,info.days, info.stations, info.company_id,db)
 

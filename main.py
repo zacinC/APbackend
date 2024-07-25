@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 import uvicorn
 
-from .routers import user,role,route
+from .routers import user,role,route,city,country,station
 
 from .MySql import models
 from .MySql.database import SessionLocal, engine
@@ -22,6 +22,10 @@ def configure_routing():
     app.include_router(user.user_router)
     app.include_router(role.role_router)
     app.include_router(route.route_router)
+    app.include_router(city.city_router)
+    app.include_router(country.country_router)
+    app.include_router(station.station_router)
+
 
 
 if __name__ == '__main__':

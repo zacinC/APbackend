@@ -9,7 +9,7 @@ from ..schemas import schemas
 role_router = APIRouter()
 
 
-@role_router.get("/roles/", response_model=list[schemas.Role])
+@role_router.get("/roles/", response_model=list[schemas.Role],tags = ["role"])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = get_roles(db, skip=skip, limit=limit)
     return users
