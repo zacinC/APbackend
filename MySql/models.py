@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table, Time
+from sqlalchemy import DECIMAL, Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table, Time
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -16,7 +16,7 @@ RouteDayAssociation = Table(
 RouteStationAssociation = Table(
     'routestation',
     Base.metadata,
-    Column('id',Integer,primary_key = True),
+    Column('id', Integer, primary_key=True),
     Column('route_id', Integer, ForeignKey('route.id')),
     Column('station_id', Integer, ForeignKey('station.id')),
     Column('departure_time', Time, nullable=True),
@@ -114,6 +114,8 @@ class Station(Base):
     address = Column(String(50))
     city_name = Column(String(25), ForeignKey("city.city_name"))
     country_name = Column(String(25), ForeignKey("country.country_name"))
+    latitude = Column(DECIMAL(10, 8))
+    longitude = Column(DECIMAL(11, 8))
 
     city = relationship("City", back_populates="stations")
     routes = relationship("Route", secondary=RouteStationAssociation,

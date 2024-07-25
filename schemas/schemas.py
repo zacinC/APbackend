@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from decimal import Decimal
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime, time
 
@@ -131,15 +132,18 @@ class Route(RouteBase):
 
 
 class StationBase(BaseModel):
-    address: str
-    phone_number: Optional[str] = None
-    class Config:
-        orm_mode: True
+    phone_number: Optional[str]
+    address: Optional[str]
+    city_name: Optional[str]
+    country_name: Optional[str]
+    latitude: Optional[Decimal] = Field(None, max_digits=10, decimal_places=8)
+    longitude: Optional[Decimal] = Field(None, max_digits=11, decimal_places=8)
 
 
 class StationCreate(StationBase):
     city_name: str
     country_name: str
+
     class Config:
         orm_mode: True
 
@@ -149,10 +153,10 @@ class Station(StationBase):
     city_name: str
     country_name: str
     routes: List[Route] = []
+
     class Config:
         orm_mode: True
 
-    
 
 # City Schema
 
@@ -168,6 +172,7 @@ class CityCreate(CityBase):
 class City(CityBase):
     country_name: str
     stations: List[Station] = []
+
     class Config:
         orm_mode: True
 
@@ -233,6 +238,7 @@ class RouteStationBase(BaseModel):
     station_id: int
     departure_time: time
     arrival_time: time
+
     class Config:
         orm_mode: True
 
@@ -247,35 +253,34 @@ class RouteStation(RouteStationBase):
     class Config:
         orm_mode: True
 
+
 class RouteStationFormatted(BaseModel):
-    station:StationCreate
-    arrival_time:Optional[time]
-    departure_time:Optional[time]
+    station: StationCreate
+    arrival_time: Optional[time]
+    departure_time: Optional[time]
 
     class Config:
-        orm_mode:True
+        orm_mode: True
 
 
-class RouteResponse(BaseModel): # za sve rute filtrirane
-    stations:List[RouteStationFormatted]
-    company_name:Optional[str]
+class RouteResponse(BaseModel):  # za sve rute filtrirane
+    stations: List[RouteStationFormatted]
+    company_name: Optional[str]
+
     class Config:
-        orm_mode:True
+        orm_mode: True
+
 
 class RouteStation2(BaseModel):
     station_id: int
     departure_time: Optional[time] = None
     arrival_time: Optional[time] = None
 
+
 class RouteCreateRequest(BaseModel):
     stations: List[RouteStation2]
     company_id: int
     days: List[DayBase]
+
     class Config:
-        orm_mode:True
-
-
-
-
-
-
+        orm_mode: True
