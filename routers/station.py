@@ -16,6 +16,6 @@ def get_all_stations(db:Session = Depends(get_db)):
     return get_stations(db)
 
 @station_router.post("/station",response_model = schemas.StationCreate,tags=["station"])
-def insert_station(station:schemas.StationCreate,db:Session = Depends(get_db)):
+def post_station(station:schemas.StationCreate,db:Session = Depends(get_db)):
     return add_station(station,db)
 
