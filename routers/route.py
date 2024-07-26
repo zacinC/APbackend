@@ -13,7 +13,7 @@ route_router = APIRouter()
 
 
 @route_router.get("/routes", response_model=List[schemas.RouteResponse], tags=["route"])
-def get_routes(companyname: Optional[str] = None, db: Session = Depends(get_db)):
+def get_all_routes(companyname: Optional[str] = None, db: Session = Depends(get_db)):
     if companyname:
         return get_routes_filtered_by_company(db, companyname)
     return get_routes(db)

@@ -51,13 +51,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    role_type:Optional[str] = "Passenger"
 
 
 class User(UserBase):
     id: int
-    role_type: str
+    role_type: Optional[str] = "Passenger"
     company_id: Optional[int] = None
-    role: Optional[Role] = None
     tickets: List['Ticket']
 
     class Config:
