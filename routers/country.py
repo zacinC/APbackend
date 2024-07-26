@@ -10,7 +10,7 @@ from ..schemas import schemas
 
 country_router = APIRouter()
 
-@country_router.get("/country",response_model=List[schemas.CountryCreate],tags = ["country"])
+@country_router.get("/countries",response_model=List[schemas.CountryCreate],tags = ["country"])
 def get_all_countries(db:Session = Depends(get_db)):
     return get_countries(db)
 

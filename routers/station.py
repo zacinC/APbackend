@@ -11,14 +11,14 @@ from ..schemas import schemas
 station_router = APIRouter()
 
 
-@station_router.get("/station",response_model=List[schemas.StationCreate],tags=["station"])
+@station_router.get("/stations",response_model=List[schemas.StationCreate],tags=["station"])
 def get_all_stations(db:Session = Depends(get_db)):
     return get_stations(db)
 
-@station_router.post("/station",response_model = schemas.StationCreate,tags=["station"])
+@station_router.post("/stations",response_model = schemas.StationCreate,tags=["station"])
 def post_station(station:schemas.StationCreate,db:Session = Depends(get_db)):
     return add_station(station,db)
 
-@station_router.put("/station/{id}",tags=["station"],status_code=status.HTTP_201_CREATED)
+@station_router.put("/stations/{id}",tags=["station"],status_code=status.HTTP_201_CREATED)
 def put_station(id,station:schemas.StationCreate,db:Session = Depends(get_db)):
     return update_station(station,id,db)

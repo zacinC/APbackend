@@ -10,6 +10,6 @@ from ..schemas import schemas
 
 city_router = APIRouter()
 
-@city_router.get("/city",response_model=List[schemas.CityCreate],tags = ["city"])
+@city_router.get("/cities",response_model=List[schemas.CityCreate],tags = ["city"])
 def get_all_cities(db:Session = Depends(get_db)):
     return get_cities(db)
