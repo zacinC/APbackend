@@ -4,3 +4,5 @@ from ..schemas import schemas
 
 def get_tickets_one_user(db:Session):
     pass
+def create_ticket(db:Session):
+    pass

@@ -15,4 +15,8 @@ ticket_router = APIRouter()
 def get_all_tickets_one_user(db:Session = Depends(get_db)):
     return get_tickets_one_user(db)
 
+@ticket_router.post("/station",response_model = schemas.Ticket,tags = ["tickets"])
+def post_ticket(ticket:schemas.TicketCreate,db:Session = Depends(get_db)):
+    pass
+
 
