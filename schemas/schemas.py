@@ -11,6 +11,7 @@ class NewsBase(BaseModel):
     content: str
     is_active: bool = True
     created_date: datetime = None
+    image: str
 
 
 class NewsCreate(NewsBase):
@@ -44,21 +45,22 @@ class Role(RoleBase):
 
 class UserBase(BaseModel):
     email: EmailStr
-    name: str
-    lastname: str
+    username: str
+    full_name: str
     phone_number: str
+    deactivated: bool
 
 
 class UserCreate(UserBase):
-    password: str
-    role_type:Optional[str] = "Passenger"
+    hashed_password: str
+    role_type: Optional[str] = "Passenger"
 
 
 class User(UserBase):
     id: int
     role_type: Optional[str] = "Passenger"
     company_id: Optional[int] = None
-    tickets: List['Ticket']
+    tickets: List['Ticket'] = []
 
     class Config:
         orm_mode: True
@@ -112,6 +114,7 @@ class Ticket(TicketBase):
 class RouteBase(BaseModel):
     departure_time: time
     arrival_time: time
+    price: Decimal
 
 
 class RouteCreate(RouteBase):

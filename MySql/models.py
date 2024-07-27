@@ -32,6 +32,8 @@ class News(Base):
     content = Column(String(5000))
     is_active = Column(Boolean, default=True)
     created_date = Column(DateTime)
+    image = Column(String(200))
+    slug = Column(String(200))
 
 
 class Role(Base):
@@ -47,12 +49,13 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     email = Column(String(100), unique=True, index=True)
-    name = Column(String(20))
-    lastname = Column(String(35))
+    username = Column(String(20), unique=True)
+    full_name = Column(String(35))
     hashed_password = Column(String(200))
     phone_number = Column(String(25))
     company_id = Column(Integer, ForeignKey("company.id"))
     role_type = Column(String(10), ForeignKey("role.type"))
+    deactivated = Column(Boolean, default=True)
 
     role = relationship("Role", back_populates="users")
     company = relationship("Company", back_populates="users")
@@ -99,6 +102,7 @@ class Route(Base):
     arrival_time = Column(Time)
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
+    price = Column(DECIMAL(5, 2))
 
     days = relationship("Day", secondary=RouteDayAssociation,
                         back_populates='routes')
