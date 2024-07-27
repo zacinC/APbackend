@@ -26,12 +26,3 @@ def get_users_filtered(page_number:int,db:Session,name:Optional[str] = None,last
                                         models.User.name.like(f'%{name}%'),
                                         models.User.lastname.like(f'%{lastname}%'),
                                         models.User.role_type.like(f'%{role}')).offset((page_number-1)*10).limit(10).all()
-
-def create_user(db: Session, user: schemas.UserCreate):
-    fake= user.password # ovdje ide logika za hesovanje passworda
-    db_user = models.User(name = user.name,lastname = user.lastname,phone_number = user.phone_number,role_type = user.role_type,email=user.email, hashed_password=fake)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    print(db_user)
-    return db_user

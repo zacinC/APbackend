@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi import APIRouter
 
 from ..MySql.database import get_db
-from ..services.user import get_users,get_user_by_email,create_user,get_users_filtered
+from ..services.user import get_users,get_users_filtered
 from ..schemas import schemas
 
 user_router = APIRouter()
@@ -24,12 +24,6 @@ def get_all_users(page_number:int,email:Optional[str] = None,name:Optional[str] 
     return users
 
 
-@user_router.post("/users/", response_model=schemas.User,tags = ["user"])
-def post_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    print(user.email)
-    db_user = get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    print(user)
-    return create_user(db=db, user=user)
+
+
 
