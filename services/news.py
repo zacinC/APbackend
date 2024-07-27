@@ -1,5 +1,7 @@
 
 
+import json
+from pathlib import Path
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..MySql import models
@@ -12,10 +14,24 @@ import datetime
 from ..schemas import schemas
 
 
+def get_key():
+    file = Path('settings.json').absolute()
+    if not file.exists():
+        print(
+            f"WARNING: {file} file not found, you cannot continue, please see settings_template.json")
+        raise Exception(
+            "settings.json file not found, you cannot continue, please see settings_template.json")
+
+    with open(file=file) as fin:
+        settings = json.load(fin)
+        api_key = settings.get('api_key')
+
+        return api_key
+
 cloudinary.config( 
     cloud_name = "dj8zqugmr", 
     api_key = "813214989451761", 
-    api_secret = "NzzFoCEy3NyriRGO_yiUGNlNByU",
+    api_secret = get_key(),
     secure=True
 )
 
