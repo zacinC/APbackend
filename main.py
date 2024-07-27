@@ -6,7 +6,7 @@ import uvicorn
 from .services import auth
 from .services.user import get_user_by_username
 
-from .routers import user, role, route, city, country, station, ticket
+from .routers import user, role, route, city, country, station, ticket,news
 
 from .MySql import models
 from .MySql.database import SessionLocal, engine, get_db
@@ -95,6 +95,7 @@ def configure_routing():
     app.include_router(country.country_router)
     app.include_router(station.station_router)
     app.include_router(ticket.ticket_router)
+    app.include_router(news.news_router)
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ def get_all_routes(companyname: Optional[str] = None, db: Session = Depends(get_
 
 
 @route_router.get("/routes/{startCity}-{startCountry}/{endCity}-{endCountry}/{date}", response_model=List[schemas.RouteResponse], tags=["route"])
-def get_routes_filtered(
+def get_filtered_routes(
         startCity: str,
         startCountry: str,
         endCity: str,
