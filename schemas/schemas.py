@@ -10,8 +10,8 @@ class NewsBase(BaseModel):
     title: str
     content: str
     is_active: bool = True
-    created_date: datetime = None
-    image: str
+    created_date: datetime = datetime.now()
+    image: Optional[str] = None
 
 
 class NewsCreate(NewsBase):

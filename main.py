@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 import uvicorn
 
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from .routers import user, role, route, city, country, station, ticket
+from .routers import user, role, route, city, country, station, ticket,news
 from .MySql import models
 from .MySql.database import SessionLocal, engine
 from .schemas.schemas import UserBase, Token
@@ -71,6 +71,7 @@ def configure_routing():
     app.include_router(country.country_router)
     app.include_router(station.station_router)
     app.include_router(ticket.ticket_router)
+    app.include_router(news.news_router)
 
 
 if __name__ == '__main__':

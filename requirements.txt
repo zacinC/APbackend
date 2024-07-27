@@ -6,3 +6,5 @@ uvicorn
 alembic
 pyjwt
 passlib[bcrypt]
+cloudinary
+python-slugify
