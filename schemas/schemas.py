@@ -48,7 +48,7 @@ class UserBase(BaseModel):
     username: str
     full_name: str
     phone_number: str
-    deactivated: bool
+    disabled: bool
 
 
 class UserCreate(UserBase):
