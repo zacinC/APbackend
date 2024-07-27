@@ -1,86 +1,62 @@
-
+from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy.orm import Session
 import uvicorn
 
-from .services import auth
-from .services.user import get_user_by_username
-
+from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from .routers import user, role, route, city, country, station, ticket
-
 from .MySql import models
-from .MySql.database import SessionLocal, engine, get_db
-from .schemas import schemas
-
+from .MySql.database import SessionLocal, engine
+from .schemas.schemas import UserBase, Token
 from typing import Annotated
+from fastapi.security import OAuth2PasswordRequestForm
+from passlib.context import CryptContext
+from .auth.security import authenticate_user, create_access_token
+from .auth.deps import get_current_active_user
 
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
+# Initialize the CryptContext with bcrypt scheme
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 
-def fake_hash_password(password: str):
-    return "fakehashed" + password
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-async def read_user(username: str, db: Session = Depends(get_db)):
-    user = get_user_by_username(db, username)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
-def get_user_by_username_sync(username: str):
+@app.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+):
     db = SessionLocal()
     try:
-        user = get_user_by_username(db, username)
-        if user is None:
-            print("User not found")
-        else:
-            # Convert user object to a dictionary
-            user_dict = vars(user)
-            return schemas.UserCreate(**user_dict)
+        user = await authenticate_user(
+            form_data.username, form_data.password, db
+        )
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.username}, expires_delta=access_token_expires
+        )
+        return Token(access_token=access_token, token_type="bearer")
     finally:
         db.close()
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    user = get_user_by_username_sync(token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
-
-
-@app.post("/token")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user = get_user_by_username_sync(form_data.username)
-    if not user:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
-
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
-
-    return {"access_token": user.username, "token_type": "bearer"}
-
-
-@app.get("/users/me")
+@app.get("/users/me", response_model=UserBase)
 async def read_users_me(
-    current_user: Annotated[schemas.UserBase, Depends(get_current_user)]
+    current_user: Annotated[UserBase, Depends(get_current_active_user)]
 ):
     return current_user
+
+
+@app.get("/users/me/items/")
+async def read_own_items(
+    current_user: Annotated[UserBase, Depends(get_current_active_user)],
+):
+    return [{"item_id": "Foo", "owner": current_user.username}]
 
 
 def configure():

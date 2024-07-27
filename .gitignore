@@ -6,3 +6,4 @@ __pycache__
 
 # private config files
 settings.json
+settings.py
