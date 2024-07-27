@@ -12,26 +12,12 @@ from cloudinary.utils import cloudinary_url
 from slugify import slugify
 import datetime
 from ..schemas import schemas
-
-
-def get_key():
-    file = Path('settings.json').absolute()
-    if not file.exists():
-        print(
-            f"WARNING: {file} file not found, you cannot continue, please see settings_template.json")
-        raise Exception(
-            "settings.json file not found, you cannot continue, please see settings_template.json")
-
-    with open(file=file) as fin:
-        settings = json.load(fin)
-        api_key = settings.get('api_key')
-
-        return api_key
+from ..settings import CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET
 
 cloudinary.config( 
     cloud_name = "dj8zqugmr", 
-    api_key = "813214989451761", 
-    api_secret = get_key(),
+    api_key = CLOUDINARY_API_KEY,
+    api_secret = CLOUDINARY_API_SECRET,
     secure=True
 )
 
