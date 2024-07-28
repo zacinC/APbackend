@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 import uvicorn
 
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from .routers import user, role, route, city, country, station, ticket, news
+from .routers import user, role, route, city, country, station, ticket, news, login
 from .MySql import models
 from .MySql.database import SessionLocal, engine
 from .schemas.schemas import UserBase, Token
@@ -12,37 +12,35 @@ from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from .auth.security import authenticate_user, create_access_token
 from .auth.deps import get_current_active_user, get_current_user
-
-# Initialize the CryptContext with bcrypt scheme
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 
-@app.post("/token", response_model=Token)
-async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-):
-    db = SessionLocal()
-    try:
-        user = await authenticate_user(
-            form_data.username, form_data.password, db
-        )
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            data={"sub": user.username}, expires_delta=access_token_expires
-        )
-        return Token(access_token=access_token, token_type="bearer")
-    finally:
-        db.close()
+# @app.post("/token", response_model=Token)
+# async def login_for_access_token(
+#     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+# ):
+#     db = SessionLocal()
+#     try:
+#         user = await authenticate_user(
+#             form_data.username, form_data.password, db
+#         )
+#         if not user:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Incorrect username or password",
+#                 headers={"WWW-Authenticate": "Bearer"},
+#             )
+#         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+#         access_token = create_access_token(
+#             data={"sub": user.username}, expires_delta=access_token_expires
+#         )
+#         return Token(access_token=access_token, token_type="bearer")
+#     finally:
+#         db.close()
 
 
 @app.get("/users/me", response_model=UserBase)
@@ -58,6 +56,19 @@ async def read_own_items(
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
+origins = [
+    "http://localhost:3000",
+    "https://cdbe-62-4-35-94.ngrok-free.app/"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headres=['*']
+)
+
 
 def configure():
     configure_routing()
@@ -72,6 +83,7 @@ def configure_routing():
     app.include_router(station.station_router)
     app.include_router(ticket.ticket_router)
     app.include_router(news.news_router)
+    app.include_router(login.login_router)
 
 
 if __name__ == '__main__':
