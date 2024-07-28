@@ -49,5 +49,5 @@ def update_route(id, info: schemas.RouteCreateRequest, db: Session = Depends(get
     return update(id, info.days, info.stations, info.company_id, db)
 
 @route_router.put("/routes/activate/{id}",status_code=status.HTTP_202_ACCEPTED,tags = ["route"])
-def activate_deactivate_route(id,should_be_activated:int,db:Session = Depends(get_db)):
+def activate_deactivate_route(id,should_be_activated:bool,db:Session = Depends(get_db)):
     return activate_deactivate(id = id,should_be_activated = should_be_activated,db = db)
