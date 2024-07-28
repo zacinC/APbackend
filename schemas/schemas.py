@@ -92,7 +92,6 @@ class TicketBase(BaseModel):
 
 
 class TicketCreate(TicketBase):
-    passenger_id: int
     company_id: int
     day_name: str
     route_id: int
