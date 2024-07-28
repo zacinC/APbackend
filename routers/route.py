@@ -44,6 +44,6 @@ def post_route(info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id, db)
 
 
-@route_router.put("/routes/{id}", status_code=status.HTTP_201_CREATED, tags=["route"])
+@route_router.put("/routes/{id}", response_model=schemas.Route,status_code=status.HTTP_201_CREATED, tags=["route"])
 def update_route(id, info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return update(id, info.days, info.stations, info.company_id, db)

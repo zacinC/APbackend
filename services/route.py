@@ -176,5 +176,5 @@ def create_route(days:List[models.Day],stations:List,company_id:int,db:Session):
 
 def update(id:int,days:List[models.Day],stations:List,company_id:int,db:Session):
     delete_routeID(db,id,None)
-    create_route(days,stations,company_id,db)
+    return create_route(days,stations,company_id,db)
 

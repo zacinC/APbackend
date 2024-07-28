@@ -47,4 +47,19 @@ def delete_user_by_id(id:int,db:Session):
 
     db.commit()
 
+def update_role_by_id(id:int,role_type:str,db:Session):
+
+    user_to_update = db.query(models.User).filter(models.User.id == id).first()
+    if not user_to_update:
+        raise HTTPException(status_code = 404,detail = f'User with {id} not found!')
     
+    user_to_update.role_type = role_type
+
+    db.commit()
+
+    db.refresh(user_to_update)
+
+    return user_to_update
+
+
+

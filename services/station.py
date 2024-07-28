@@ -32,4 +32,6 @@ def update_station(station:schemas.Station,id:int,db:Session):
     db.commit()
     db.refresh(db_station)
 
+    return db_station
+
     
