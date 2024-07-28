@@ -114,6 +114,7 @@ class RouteBase(BaseModel):
     departure_time: time
     arrival_time: time
     price: Decimal
+    is_active: bool
 
 
 class RouteCreate(RouteBase):

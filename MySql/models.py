@@ -103,6 +103,7 @@ class Route(Base):
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
     price = Column(DECIMAL(5, 2))
+    is_active = Column(Boolean)
 
     days = relationship("Day", secondary=RouteDayAssociation,
                         back_populates='routes')

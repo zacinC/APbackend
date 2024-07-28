@@ -37,7 +37,6 @@ async def read_own_items(
 
 origins = [
     "http://localhost:3000",
-    "https://cdbe-62-4-35-94.ngrok-free.app/"  # Add this line
 ]
 
 app.add_middleware(
