@@ -1,5 +1,8 @@
 from datetime import timedelta
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 import uvicorn
 
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -48,6 +51,15 @@ app.add_middleware(
 
 def configure():
     configure_routing()
+    configure_exceptions()
+
+def configure_exceptions():
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+        )
 
 
 def configure_routing():
@@ -60,6 +72,7 @@ def configure_routing():
     app.include_router(ticket.ticket_router)
     app.include_router(news.news_router)
     app.include_router(login.login_router)
+   
 
 
 if __name__ == '__main__':

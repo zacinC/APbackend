@@ -1,4 +1,5 @@
 from typing import Optional
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..MySql import models
 from ..schemas import schemas
@@ -34,3 +35,16 @@ def get_users_filtered(page_number: int, db: Session, username: Optional[str] = 
                                         models.User.full_name.like(
                                             f'%{full_name}%'),
                                         models.User.role_type.like(f'%{role}')).offset((page_number-1)*10).limit(10).all()
+
+def delete_user_by_id(id:int,db:Session):
+
+    user_to_delete = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user_to_delete:
+        raise HTTPException(status_code = 404,detail = f'User with {id} not found!')
+    
+    db.delete(user_to_delete)
+
+    db.commit()
+
+    
