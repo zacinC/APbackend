@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 import uvicorn
 
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from .routers import user, role, route, city, country, station, ticket,news
+from .routers import user, role, route, city, country, station, ticket, news
 from .MySql import models
 from .MySql.database import SessionLocal, engine
 from .schemas.schemas import UserBase, Token
@@ -11,7 +11,7 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from .auth.security import authenticate_user, create_access_token
-from .auth.deps import get_current_active_user
+from .auth.deps import get_current_active_user, get_current_user
 
 # Initialize the CryptContext with bcrypt scheme
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -47,7 +47,7 @@ async def login_for_access_token(
 
 @app.get("/users/me", response_model=UserBase)
 async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_active_user)]
+    current_user: Annotated[UserBase, Depends(get_current_user)]
 ):
     return current_user
 
