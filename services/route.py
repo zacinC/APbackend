@@ -178,3 +178,14 @@ def update(id:int,days:List[models.Day],stations:List,company_id:int,db:Session)
     delete_routeID(db,id,None)
     return create_route(days,stations,company_id,db)
 
+def activate_deactivate(id:int,should_be_activated:bool,db:Session):
+    if not should_be_activated:
+        delete_routeID(db,id,None)
+
+    else:
+        route_to_update = db.query(models.Route).filter(models.Route.id == id).first()
+        route_to_update.is_active = 1
+        db.commit()
+        db.refresh(route_to_update) 
+
+
