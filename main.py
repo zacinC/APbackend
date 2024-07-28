@@ -19,30 +19,6 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-# @app.post("/token", response_model=Token)
-# async def login_for_access_token(
-#     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-# ):
-#     db = SessionLocal()
-#     try:
-#         user = await authenticate_user(
-#             form_data.username, form_data.password, db
-#         )
-#         if not user:
-#             raise HTTPException(
-#                 status_code=status.HTTP_401_UNAUTHORIZED,
-#                 detail="Incorrect username or password",
-#                 headers={"WWW-Authenticate": "Bearer"},
-#             )
-#         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#         access_token = create_access_token(
-#             data={"sub": user.username}, expires_delta=access_token_expires
-#         )
-#         return Token(access_token=access_token, token_type="bearer")
-#     finally:
-#         db.close()
-
-
 @app.get("/users/me", response_model=UserBase)
 async def read_users_me(
     current_user: Annotated[UserBase, Depends(get_current_user)]
@@ -58,15 +34,15 @@ async def read_own_items(
 
 origins = [
     "http://localhost:3000",
-    "https://cdbe-62-4-35-94.ngrok-free.app/"
+    "https://cdbe-62-4-35-94.ngrok-free.app/"  # Add this line
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headres=['*']
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 
