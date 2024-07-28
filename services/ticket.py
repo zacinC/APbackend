@@ -37,4 +37,19 @@ def create_ticket(db:Session,ticket:schemas.Ticket,current_user:schemas.UserBase
     db.refresh(to_create)
     return to_create
 
+def delete_ticket_user(db:Session,id:int,current_user:schemas.UserBase):
+
+    ticket_to_delete = db.query(models.Ticket).filter(models.Ticket.id == id).first()
+    
+    if not ticket_to_delete:
+        raise HTTPException(status_code=404,detail = "Ticket not found!")
+
+    db.delete(ticket_to_delete)
+
+    db.commit()
+
+
+
+
+
     
