@@ -1,7 +1,7 @@
 from fastapi.responses import HTMLResponse
 from ..settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from ..MySql import models
-from ..MySql.database import SessionLocal, get_db
+from ..MySql.database import get_db
 from ..schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
@@ -18,7 +18,7 @@ from ..services.user import get_user_by_email, get_user_by_username
 login_router = APIRouter()
 
 
-@login_router.post("/token", response_model=Token)
+@login_router.post("/token", response_model=Token, tags=['login'])
 async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends(
         )], db: Session = Depends(get_db)):
@@ -38,7 +38,7 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@login_router.get("/users/me", response_model=UserBase, tags="Test access token")
+@login_router.get("/users/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
 async def read_users_me(
     current_user: Annotated[UserBase, Depends(get_current_user)]
 ):
@@ -65,7 +65,7 @@ async def read_users_me(
 #     return Message(message="Password updated successfully")
 
 
-@login_router.post("/reset-password/")
+@login_router.post("/reset-password/", tags=['login'])
 def reset_password(
     token: str = Form(...),
     new_password: str = Form(...),
@@ -93,7 +93,7 @@ def reset_password(
     return Message(message="Password updated successfully")
 
 
-@login_router.get("/recover-password/{token}", response_class=HTMLResponse)
+@login_router.get("/recover-password/{token}", response_class=HTMLResponse, tags=['login'])
 async def password_recovery_form(token: str):
     return f"""
     <html>
@@ -115,7 +115,7 @@ async def password_recovery_form(token: str):
     """
 
 
-@login_router.post("/recover-password", response_model=Message)
+@login_router.post("/recover-password", response_model=Message, tags=['login'])
 async def recover_password(email: str, db: Session = Depends(get_db)):
     user = get_user_by_email(db, email)
 
