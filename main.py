@@ -1,18 +1,11 @@
-from datetime import timedelta
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.responses import HTMLResponse
+from fastapi import Depends, FastAPI, status
+
 import uvicorn
 
-from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from .routers import user, role, route, city, country, station, ticket, news, login
 from .MySql import models
-from .MySql.database import SessionLocal, engine
-from .schemas.schemas import UserBase, Token
-from typing import Annotated
-from fastapi.security import OAuth2PasswordRequestForm
-from passlib.context import CryptContext
-from .auth.utils import generate_password_reset_token
-from .auth.deps import get_current_active_user
+from .MySql.database import engine
+
 from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
