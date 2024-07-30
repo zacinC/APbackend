@@ -289,6 +289,8 @@ class RouteCreateRequest(BaseModel):
     class Config:
         orm_mode: True
 
+# Token for auth
+
 
 class Token(BaseModel):
     access_token: str
@@ -297,3 +299,15 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+# Password format
+
+
+class NewPassword(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=40)
+
+
+# Message
+class Message(BaseModel):
+    message: str
