@@ -1,5 +1,6 @@
 from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import HTMLResponse
 import uvicorn
 
 from .settings import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -10,20 +11,13 @@ from .schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
-from .auth.security import authenticate_user, create_access_token
-from .auth.deps import get_current_active_user, get_current_user
+from .auth.utils import generate_password_reset_token
+from .auth.deps import get_current_active_user
 from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-
-@app.get("/users/me", response_model=UserBase)
-async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_user)]
-):
-    return current_user
 
 
 @app.get("/users/me/items/")

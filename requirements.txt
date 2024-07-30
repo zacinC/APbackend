@@ -8,3 +8,4 @@ pyjwt
 passlib[bcrypt]
 cloudinary
 python-slugify
+sib-api-v3-sdk
