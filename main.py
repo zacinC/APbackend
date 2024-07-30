@@ -1,5 +1,8 @@
-from fastapi import Depends, FastAPI, status
-
+from datetime import timedelta
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 import uvicorn
 
 from .routers import user, role, route, city, country, station, ticket, news, login
@@ -28,6 +31,17 @@ app.add_middleware(
 
 def configure():
     configure_routing()
+    configure_exceptions()
+
+
+def configure_exceptions():
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=jsonable_encoder(
+                {"detail": exc.errors(), "body": exc.body}),
+        )
 
 
 def configure_routing():

@@ -23,6 +23,6 @@ def add(notif:schemas.NewsCreate,db:Session = Depends(get_db)):
 def delete_news(id:int,db:Session = Depends(get_db)):
     return delete(db = db,id = id)
 
-@news_router.put("/news/{id}",tags = ["news"])
+@news_router.put("/news/{id}",response_model=schemas.News,tags = ["news"])
 def update_news(notif:schemas.NewsCreate,id:int,db:Session = Depends(get_db)):
     return update(db = db,id = id,notif = notif)

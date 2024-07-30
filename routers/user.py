@@ -1,11 +1,11 @@
 
 from typing import Optional
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException,status
 from fastapi import APIRouter
 
 from ..MySql.database import get_db
-from ..services.user import get_users, get_user_by_email, get_users_filtered, get_user_by_username
+from ..services.user import get_users, get_user_by_email, get_users_filtered, get_user_by_username,delete_user_by_id,update_role_by_id
 from ..schemas import schemas
 
 user_router = APIRouter()
@@ -31,3 +31,12 @@ def get_all_users(page_number: int, username: Optional[str] = None, full_name: O
     else:
         users = get_users(db, page_number)
     return users
+
+@user_router.delete("/users/{id}",status_code=status.HTTP_204_NO_CONTENT,tags = ["user"])
+def delete_user(id:str,db:Session = Depends(get_db)):
+    return delete_user_by_id(id = id,db = db)
+
+@user_router.put("/users/{id}",response_model=schemas.User,tags = ["user"])
+
+def update_role(id:int,role_type:str,db:Session = Depends(get_db)):
+    return update_role_by_id(id = id,role_type = role_type,db = db)
