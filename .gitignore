@@ -4,7 +4,9 @@ __pycache__
 # editor files
 .vscode
 
-venv/
+# venv
+venv
+
 
 # private config files
 settings.json
