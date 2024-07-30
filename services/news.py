@@ -77,11 +77,13 @@ def update(db:Session,id:int,notif:schemas.NewsCreate):
         raise HTTPException(status_code=404,detail="Not found!")
     
     image_url = to_update.image
-    public_id = extract_public_id(image_url)
 
-    print(public_id)
-    
-    cloudinary.uploader.destroy(public_id)
+    if(image_url):
+        public_id = extract_public_id(image_url)
+
+        print(public_id)
+        
+        cloudinary.uploader.destroy(public_id)
 
     img = notif.image
     upload_result = cloudinary.uploader.upload(img)
@@ -95,6 +97,9 @@ def update(db:Session,id:int,notif:schemas.NewsCreate):
     to_update.image=upload_result_url
 
     db.commit()
+    db.refresh(to_update)
+
+    return to_update
 
     
 
