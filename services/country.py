@@ -1,10 +1,8 @@
 
 
 from sqlalchemy.orm import Session
-from ..MySql import models
+from ..database import models
 
 
-
-def get_countries(db:Session):
+def get_countries(db: Session):
     return db.query(models.Country).all()
-    

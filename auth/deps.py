@@ -6,14 +6,14 @@ from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 from ..services.user import get_user_by_username
 from ..schemas.schemas import TokenData, UserBase
-from ..MySql.database import SessionLocal, get_db
+from ..database.dbconfig import SessionLocal, get_db
 from ..settings import ALGORITHM, SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 async def get_user(username: str, db: Session):
-    user = get_user_by_username(db,username)
+    user = get_user_by_username(db, username)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user

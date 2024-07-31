@@ -1,7 +1,7 @@
 from fastapi.responses import HTMLResponse
 from ..settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from ..MySql import models
-from ..MySql.database import get_db
+from ..database import models
+from ..database.dbconfig import get_db
 from ..schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm

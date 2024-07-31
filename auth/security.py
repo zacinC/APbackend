@@ -5,7 +5,7 @@ import jwt
 from .utils import verify_password
 from ..settings import ALGORITHM, SECRET_KEY
 from .deps import get_user
-from ..MySql.database import get_db
+from ..database.dbconfig import get_db
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

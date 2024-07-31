@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from .routers import user, role, route, city, country, station, ticket, news, login
-from .MySql import models
-from .MySql.database import engine
+from .database import models
+from .database.dbconfig import engine
 
 from fastapi.middleware.cors import CORSMiddleware
 

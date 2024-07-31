@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
-from ..MySql import models
+from ..database import models
 
 
-
-def get_cities(db:Session):
+def get_cities(db: Session):
     return db.query(models.City).all()
-    

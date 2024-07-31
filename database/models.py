@@ -1,7 +1,7 @@
 from sqlalchemy import DECIMAL, Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table, Time
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from .dbconfig import Base
 
 
 RouteDayAssociation = Table(

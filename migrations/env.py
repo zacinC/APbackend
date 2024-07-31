@@ -1,5 +1,5 @@
-from MySql.models import Base
-from MySql.database import MYSQL_DATABASE_URL
+from database.models import Base
+from dbconfig import MYSQL_DATABASE_URL
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
