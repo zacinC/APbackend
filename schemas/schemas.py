@@ -1,4 +1,5 @@
 from decimal import Decimal
+import uuid
 from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime, time
@@ -44,26 +45,41 @@ class Role(RoleBase):
 
 
 class UserBase(BaseModel):
-    email: EmailStr
-    username: str
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    username: str = Field(unique=True, index=True, max_length=30)
     full_name: str
     phone_number: str
-    disabled: bool
 
 
 class UserCreate(UserBase):
-    hashed_password: str
-    role_type: Optional[str] = "Passenger"
+    password: str = Field(min_length=8, max_length=40)
+    role_type: Optional[str] = Field(default="Passenger")
+
+
+class UserRegister(BaseModel):
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    username: str = Field(unique=True, index=True, max_length=30)
+    full_name: str
+    phone_number: str
+    password: str = Field(min_length=8, max_length=40)
+    role_type: str = "Passenger"
 
 
 class User(UserBase):
     id: int
-    role_type: Optional[str] = "Passenger"
+    hashed_password: str
+    role_type: Optional[str] = Field(default="Passenger")
     company_id: Optional[int] = None
     tickets: List['Ticket'] = []
 
     class Config:
         orm_mode: True
+
+# Properties to return via API, id is always required
+
+
+class UserPublic(UserBase):
+    id: int
 
 # Company Schema
 

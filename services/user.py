@@ -1,6 +1,8 @@
 from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
+from ..auth.utils import get_password_hash
 from ..database import models
 from ..schemas import schemas
 
@@ -37,6 +39,21 @@ def get_users_filtered(page_number: int, db: Session, username: Optional[str] = 
                                         models.User.role_type.like(f'%{role}')).offset((page_number-1)*10).limit(10).all()
 
 
+def create_user(db: Session, user_create: schemas.UserRegister | schemas.UserCreate) -> models.User:
+    db_obj = models.User(
+        email=user_create.email,
+        username=user_create.username,
+        full_name=user_create.full_name,
+        phone_number=user_create.phone_number,
+        hashed_password=get_password_hash(user_create.password),
+        role_type=user_create.role_type
+    )
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+
 def delete_user_by_id(id: int, db: Session):
 
     user_to_delete = db.query(models.User).filter(models.User.id == id).first()
@@ -49,8 +66,10 @@ def delete_user_by_id(id: int, db: Session):
 
     db.commit()
 
+# Ovo treba da bude update user
 
-def update_role_by_id(id: int, role_type: str, db: Session):
+
+def update_role_by_id(id: int, role_type: str, db: Session) -> models.User:
 
     user_to_update = db.query(models.User).filter(models.User.id == id).first()
     if not user_to_update:

@@ -1,10 +1,8 @@
-from datetime import timedelta
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import uvicorn
-
 from .routers import user, role, route, city, country, station, ticket, news, login
 from .database import models
 from .database.dbconfig import engine
