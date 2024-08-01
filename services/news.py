@@ -1,5 +1,3 @@
-
-
 import json
 from pathlib import Path
 from fastapi import HTTPException
@@ -65,11 +63,13 @@ def delete(db: Session, id: int):
 
     if not to_delete:
         raise HTTPException(status_code=404, detail="Not found!")
+    
 
-    image_url = to_delete.image
-    public_id = extract_public_id(image_url)
+    if to_delete.image:
+        image_url = to_delete.image
+        public_id = extract_public_id(image_url)
 
-    cloudinary.uploader.destroy(public_id)
+        cloudinary.uploader.destroy(public_id)
 
     db.delete(to_delete)
     db.commit()
