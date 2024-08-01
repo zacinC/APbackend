@@ -94,8 +94,6 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     
     upload_result_url = None
 
-    
-
     if notif.image:
         img = notif.image
         upload_result = cloudinary.uploader.upload(img)
@@ -103,7 +101,7 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
 
     to_update.content = notif.content
     to_update.title = notif.title
-    to_update.created_date = notif.created_date
+    to_update.created_date = to_update.created_date
     to_slug = f"{notif.title}-{id}"
     to_update.slug = slugify(to_slug)
     to_update.image = upload_result_url

@@ -20,7 +20,8 @@ class NewsCreate(NewsBase):
 
 class News(NewsBase):
     id: int
-
+    slug: str
+    
     class Config:
         orm_mode: True
 
