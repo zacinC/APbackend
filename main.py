@@ -3,6 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 import uvicorn
 
 from .routers import user, role, route, city, country, station, ticket, news, login
@@ -42,6 +43,20 @@ def configure_exceptions():
             content=jsonable_encoder(
                 {"detail": exc.errors(), "body": exc.body}),
         )
+    @app.exception_handler(IntegrityError)
+    async def integrity_error_handler(request: Request, exc: IntegrityError):
+        return JSONResponse(
+            status_code=409,
+            content={"message": "Integrity error occurred", "details": str(exc)}
+        )
+
+    @app.exception_handler(Exception)
+    async def unexpected_error_handler(request: Request, exc: Exception):
+        return JSONResponse(
+            status_code=500,
+            content={"message": "An unexpected error occurred", "details": str(exc)}
+        )
+
 
 
 def configure_routing():
