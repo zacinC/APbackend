@@ -21,7 +21,8 @@ class NewsCreate(NewsBase):
 
 class News(NewsBase):
     id: int
-
+    slug: str
+    
     class Config:
         orm_mode: True
 
@@ -167,6 +168,9 @@ class StationCreate(StationBase):
         orm_mode: True
 
 
+class StationFormatted(StationBase):
+    id:int
+
 class Station(StationBase):
     id: int
     city_name: str
@@ -274,7 +278,7 @@ class RouteStation(RouteStationBase):
 
 
 class RouteStationFormatted(BaseModel):
-    station: StationCreate
+    station: StationFormatted
     arrival_time: Optional[time]
     departure_time: Optional[time]
 
@@ -285,6 +289,7 @@ class RouteStationFormatted(BaseModel):
 class RouteResponse(BaseModel):  # za sve rute filtrirane
     stations: List[RouteStationFormatted]
     company_name: Optional[str]
+    route_id: int
 
     class Config:
         orm_mode: True
