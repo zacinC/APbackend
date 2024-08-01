@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
 
 from ..database.dbconfig import get_db
-from ..services.news import get_news, upload_news, delete, update
+from ..services.news import get_news, upload_news, delete, update,get_news_filtered
 from ..schemas import schemas
 
 news_router = APIRouter()
@@ -14,6 +14,12 @@ news_router = APIRouter()
 @news_router.get("/news", response_model=List[schemas.News], tags=["news"])
 def get_all_news(db: Session = Depends(get_db)):
     return get_news(db)
+
+
+@news_router.get("/news-filtered", response_model=List[schemas.News], tags=["news"])
+def get_all_news_filtered(search:str,db: Session = Depends(get_db)):
+    return get_news_filtered(db,search)
+
 
 
 @news_router.post("/news", response_model=schemas.News, tags=["news"])

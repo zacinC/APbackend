@@ -11,6 +11,7 @@ from slugify import slugify
 import datetime
 from ..schemas import schemas
 from ..settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from sqlalchemy import or_
 
 cloudinary.config(
     cloud_name="dj8zqugmr",
@@ -25,8 +26,17 @@ def extract_public_id(image_url: str) -> str:
 
 
 def get_news(db: Session):
-    return db.query(models.News).all()
+    return db.query(models.News).order_by(models.News.id).all()
 
+
+def get_news_filtered(db: Session,search:str):
+
+        return db.query(models.News).filter(
+            or_(
+                models.News.content.like(f'%{search}%'),
+                models.News.title.like(f'%{search}%')
+            )
+        ).order_by(models.News.id).all()
 
 def upload_news(db: Session, notif: schemas.NewsCreate):
 
