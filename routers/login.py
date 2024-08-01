@@ -1,4 +1,5 @@
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from ..settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from ..database import models
 from ..database.dbconfig import get_db
@@ -6,9 +7,9 @@ from ..schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from ..auth.security import authenticate_user, create_access_token
-from ..auth.deps import get_current_active_user, get_current_user
+from ..auth.deps import get_current_user
 from ..auth.utils import generate_password_reset_email, get_password_hash, send_email, verify_password_reset_token, generate_password_reset_token
-from fastapi import Depends, APIRouter, Form, HTTPException, status
+from fastapi import Depends, APIRouter, Form, HTTPException, Request, status
 from datetime import timedelta
 from sqlalchemy.orm import Session
 from ..schemas.schemas import Message, NewPassword
@@ -16,6 +17,9 @@ from ..services.user import get_user_by_email, get_user_by_username
 
 
 login_router = APIRouter()
+
+
+templates = Jinja2Templates(directory="templates")
 
 
 @login_router.post("/token", response_model=Token, tags=['login'])
@@ -38,11 +42,11 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@login_router.get("/users/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
-async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_user)]
-):
-    return current_user
+# @login_router.get("/user/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
+# async def read_users_me(
+#     current_user: Annotated[UserBase, Depends(get_current_user)]
+# ):
+#     return current_user
 
 
 # @login_router.post("/reset-password", response_model=None)
@@ -65,21 +69,20 @@ async def read_users_me(
 #     return Message(message="Password updated successfully")
 
 
-@login_router.post("/reset-password/", tags=['login'])
-def reset_password(
-    token: str = Form(...),
-    new_password: str = Form(...),
-    confirm_password: str = Form(...),
-    db: Session = Depends(get_db)
-):
+@login_router.post("/reset-password/", response_class=HTMLResponse, tags=['login'])
+def reset_password(request: Request,
+                   token: str = Form(...),
+                   new_password: str = Form(...),
+                   confirm_password: str = Form(...),
+                   db: Session = Depends(get_db)
+                   ):
     if new_password != confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
 
     email = verify_password_reset_token(token=token)
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
-    # Ovo treba da se sredi da moze da se uloguje preko mejla i preko usernamea, za sad ovo email je username
-    # user = get_user_by_email(db, email=email)
+
     user = get_user_by_username(db, email)
     if not user:
         raise HTTPException(
@@ -90,29 +93,14 @@ def reset_password(
     user.hashed_password = hashed_password
     db.add(user)
     db.commit()
-    return Message(message="Password updated successfully")
+
+    message = "Lozinka je uspješno resetovana!"
+    return templates.TemplateResponse("successful_password_reset.html", {"request": request, "message": message})
 
 
 @login_router.get("/recover-password/{token}", response_class=HTMLResponse, tags=['login'])
-async def password_recovery_form(token: str):
-    return f"""
-    <html>
-        <head>
-            <title>Reset Password</title>
-        </head>
-        <body>
-            <h1>Reset Your Password</h1>
-            <form action="/reset-password/" method="post">
-                <input type="hidden" name="token" value="{token}">
-                <label for="new_password">New Password:</label><br>
-                <input type="password" id="new_password" name="new_password" required><br><br>
-                <label for="confirm_password">Confirm New Password:</label><br>
-                <input type="password" id="confirm_password" name="confirm_password" required><br><br>
-                <button type="submit">Reset Password</button>
-            </form>
-        </body>
-    </html>
-    """
+async def password_recovery_form(request: Request, token: str):
+    return templates.TemplateResponse("reset_password.html", {"request": request, "token": token})
 
 
 @login_router.post("/recover-password", response_model=Message, tags=['login'])

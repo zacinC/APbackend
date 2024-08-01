@@ -55,7 +55,6 @@ class User(Base):
     phone_number = Column(String(25))
     company_id = Column(Integer, ForeignKey("company.id"))
     role_type = Column(String(10), ForeignKey("role.type"))
-    disabled = Column(Boolean, default=False)
 
     role = relationship("Role", back_populates="users")
     company = relationship("Company", back_populates="users")

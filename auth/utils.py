@@ -47,7 +47,7 @@ def generate_password_reset_token(email: str) -> str:
 
 def generate_password_reset_email(user: UserBase):
     project_name = "Autobuski Prevoz Crne Gore"
-    subject = f"{project_name} - Password recovery for user {user.email}"
+    subject = f"{project_name} - Resetovanje lozinke za korisnika {user.email}"
 
     token = generate_password_reset_token(user.username)
     context = {
@@ -67,14 +67,15 @@ def render_email_template(context: dict) -> str:
     html_content = f"""
     <html>
       <body>
-        <p>Dear {context["username"]},</p>
+        <p>Poštovani {context["username"]},</p>
         <p>
-          You have requested to reset your password for the project {context["project_name"]}.
-          Click the link below to reset your password:
+          Zatražili ste resetovanje lozinke na platformi {context["project_name"]}.
+          Kliknite na link ispod za resetovanje lozinke:
         </p>
-        <p><a href="{context["link"]}">Reset Password</a></p>
-        <p>This link will expire in {context["valid_hours"]} hours.</p>
-        <p>If you did not request this password reset, please ignore this email.</p>
+        <p><a href="{context["link"]}">Resetuj Lozinku</a></p>
+        <p>Ovaj link je validan narednih {context["valid_hours"]} sati.</p>
+        <p>Ukoliko niste zatražili resetovanje lozinke, ignorišite ovaj mejl.</p>
+        <p>Srdačno, APCG.</p>
       </body>
     </html>
     """
