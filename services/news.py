@@ -32,9 +32,12 @@ def upload_news(db: Session, notif: schemas.NewsCreate):
 
     print(notif.image)
 
-    img = notif.image
-    upload_result = cloudinary.uploader.upload(img)
-    upload_result_url = upload_result['url']
+    upload_result_url = None
+
+    if notif.image:
+        img = notif.image
+        upload_result = cloudinary.uploader.upload(img)
+        upload_result_url = upload_result['url']
 
     to_create = models.News(
         title=notif.title,
@@ -88,10 +91,15 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
         print(public_id)
 
         cloudinary.uploader.destroy(public_id)
+    
+    upload_result_url = None
 
-    img = notif.image
-    upload_result = cloudinary.uploader.upload(img)
-    upload_result_url = upload_result['url']
+    
+
+    if notif.image:
+        img = notif.image
+        upload_result = cloudinary.uploader.upload(img)
+        upload_result_url = upload_result['url']
 
     to_update.content = notif.content
     to_update.title = notif.title
