@@ -5,7 +5,7 @@ from ..database import models
 import datetime
 
 
-def get_routes(db: Session):
+def get_routes(db: Session,is_active:Optional[bool] = None):
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
         .filter(models.Company.id == models.RouteDay.company_id,
                 models.RouteStationAssociation.columns.get(
@@ -16,12 +16,31 @@ def get_routes(db: Session):
 
     grouped_results = {}
 
+    
+    all_active = get_all_active(db)
+    all_inactive = get_all_inactive(db)
+
+    print(all_active,all_inactive)
+
+        
+
+
     for item in routes_filtered:
         route_id = item[0]
+
+        if is_active and is_active == 1:
+            if route_id not in all_active:
+                continue
+        
+        if is_active and is_active == -1:
+            if route_id not in all_inactive:
+                continue
+
         if route_id not in grouped_results:
             grouped_results[route_id] = {
                 "company_name": item[1],
                 "stations": [],
+                "route_id":item[0]
             }
 
         grouped_results[route_id]["stations"].append({"station": item[8],
@@ -39,7 +58,7 @@ def get_routes(db: Session):
     return final_list
 
 
-def get_routes_filtered_by_company(db: Session, companyname: str):
+def get_routes_filtered_by_company(db: Session, companyname: str,is_active:Optional[int] = None):
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
         .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
                 models.RouteStationAssociation.columns.get(
@@ -50,12 +69,29 @@ def get_routes_filtered_by_company(db: Session, companyname: str):
 
     grouped_results = {}
 
+    all_active = get_all_active(db)
+    all_inactive = get_all_inactive(db)
+
+    print(all_active,all_inactive)
+
+
+
     for item in routes_filtered:
         route_id = item[0]
+
+        if is_active and is_active == 1:
+            if route_id not in all_active:
+                continue
+        
+        if is_active and is_active == -1:
+            if route_id not in all_inactive:
+                continue
+
         if route_id not in grouped_results:
             grouped_results[route_id] = {
                 "company_name": item[1],
                 "stations": [],
+                "route_id":item[0]
             }
 
         grouped_results[route_id]["stations"].append({"station": item[8],
@@ -73,28 +109,50 @@ def get_routes_filtered_by_company(db: Session, companyname: str):
     return final_list
 
 
-def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime]):
+def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
+    day_of_week_full = None
+    if date:
+        day_of_week_full = date.strftime('%A')
+    else:
+        day_of_week_full = datetime.datetime.now().strftime('%A')
 
-    day_of_week_full = date.strftime('%A')
+    if not price_from:
+        price_from = -1
+    if not price_to:
+        price_to = 10000
+    
+    if not startCity:
+        startCity = ""
+    if not startCountry:
+        startCountry = ""
+    if not endCity:
+        endCity = ""
+    if not endCountry:
+        endCountry = ""
+    
 
     startStations: List[models.Station] = db.query(models.Station).filter(
-        models.Station.city_name == startCity,
-        models.Station.country_name == startCountry
+        models.Station.city_name.like(f'%{startCity}%'),
+        models.Station.country_name.like(f'%{startCountry}%')
     ).all()
 
     endStations: List[models.Station] = db.query(models.Station).filter(
-        models.Station.city_name == endCity,
-        models.Station.country_name == endCountry
+        models.Station.city_name.like(f'%{endCity}%'),
+        models.Station.country_name.like(f'%{endCountry}%')
     ).all()
 
     startStations = [station.id for station in startStations]
     endStations = [station.id for station in endStations]
 
-    print(startStations, endStations)
+    print(startStations, endStations, day_of_week_full,price_from,price_to)
+
+
     routes: List[models.Route] = db.query(models.Route).filter(models.Route.departure_station_id.in_(
-        startStations)).filter(models.Route.arrival_station_id.in_(endStations)).all()
+        startStations)).filter(models.Route.arrival_station_id.in_(endStations),
+                               models.Route.price >= price_from,models.Route.price <= price_to).all()
 
     routesIds = [route.id for route in routes]
+
 
     routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station).\
         filter(models.RouteDayAssociation.columns.get("route_id").in_(routesIds), models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
@@ -106,14 +164,13 @@ def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity:
         .all()
     grouped_results = {}
 
-    print(routes_filtered)
-
     for item in routes_filtered:
         route_id = item[1]
         if route_id not in grouped_results:
             grouped_results[route_id] = {
                 "company_name": item[3],
                 "stations": [],
+                "route_id":item[1]
             }
 
         grouped_results[route_id]["stations"].append({"station": item[9],
@@ -158,9 +215,10 @@ def delete_routeID(db: Session, id: int, day_name: str):
 def create_route(days: List[models.Day], stations: List, company_id: int, db: Session):
     startStation = stations[0]
     endStation = stations[-1]
+    route_price = endStation.price;
 
     new_route = models.Route(departure_station_id=startStation.station_id, arrival_station_id=endStation.station_id,
-                             arrival_time=endStation.arrival_time, departure_time=startStation.departure_time)
+                             arrival_time=endStation.arrival_time, departure_time=startStation.departure_time,price = route_price)
 
     db.add(new_route)
     db.commit()
@@ -199,3 +257,49 @@ def activate_deactivate(id: int, should_be_activated: bool, db: Session):
         route_to_update.is_active = 1
         db.commit()
         db.refresh(route_to_update)
+
+def get_all_inactive(db:Session):
+    routes = db.query(models.Route.id).filter(models.Route.is_active == 0).all()
+    return [route[0] for route in routes]
+
+def get_all_active(db:Session):
+    routes = db.query(models.Route.id).filter(models.Route.is_active == 1).all()
+    return [route[0] for route in routes]
+
+def get_route_by_id(db:Session,id:int):
+    routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+        .filter(models.Company.id == models.RouteDay.company_id,
+                id == models.RouteDay.route_id,
+                models.Station.id == models.RouteStationAssociation.columns.get(
+                    "station_id")
+                ).all()
+
+    grouped_results = {}
+
+
+        
+
+
+    for item in routes_filtered:
+        route_id = item[0]
+
+        if route_id not in grouped_results:
+            grouped_results[route_id] = {
+                "company_name": item[1],
+                "stations": [],
+                "route_id":item[0]
+            }
+
+        grouped_results[route_id]["stations"].append({"station": item[8],
+                                                      "arrival_time": item[7],
+                                                      "departure_time": item[6]
+                                                      })
+
+    final_list = []
+
+    for key, value in grouped_results.items():
+        final_list.append(value)
+
+    print(final_list)
+
+    return final_list

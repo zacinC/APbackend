@@ -1,5 +1,3 @@
-
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
@@ -23,7 +21,7 @@ def get_stations_filtered(db: Session, search: str):
 
 def add_station(station: schemas.StationCreate, db: Session):
     station_to_add = models.Station(city_name=station.city_name, country_name=station.country_name,
-                                    phone_number=station.phone_number, address=station.address)
+                                    phone_number=station.phone_number, address=station.address, latitude=station.latitude, longitude=station.longitude)
 
     db.add(station_to_add)
     db.commit()

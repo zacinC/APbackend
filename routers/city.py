@@ -12,5 +12,5 @@ city_router = APIRouter()
 
 
 @city_router.get("/cities", response_model=List[schemas.CityCreate], tags=["city"])
-def get_all_cities(db: Session = Depends(get_db)):
-    return get_cities(db)
+def get_all_cities(city_name:Optional[str] = None,db: Session = Depends(get_db)):
+    return get_cities(db = db,city_name=city_name)
