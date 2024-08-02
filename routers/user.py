@@ -45,5 +45,5 @@ def delete_user(id: str, current_user: Annotated[schemas.User, Depends(get_curre
 
 
 @user_router.put("/users/{id}", response_model=schemas.User, tags=["user"])
-def update_user(id:int,update:schemas.UserRegister, db: Session = Depends(get_db)):
-    return update_single_user(id=id, update = update, db=db)
+def update_user(id: int, update: schemas.UserRegister, db: Session = Depends(get_db)):
+    return update_single_user(id=id, update=update, db=db)

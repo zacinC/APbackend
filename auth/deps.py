@@ -48,7 +48,7 @@ async def get_current_admin_user(
 ):
     if current_user.role_type != 'Admin':
         raise HTTPException(
-            status_code=400, detail="User doesn't have Admin privileges!")
+            status_code=403, detail="User doesn't have Admin privileges!")
     return current_user
 
 
@@ -57,5 +57,5 @@ async def get_current_driver_user(
 ):
     if current_user.role_type != 'Driver':
         raise HTTPException(
-            status_code=400, detail="User is not a driver!")
+            status_code=403, detail="User is not a driver!")
     return current_user
