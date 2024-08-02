@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import Annotated, List, Optional
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import APIRouter, status
+
+from AutobuskeBackend.auth.deps import get_current_admin_user, get_current_driver_user
 
 from ..database.dbconfig import get_db
 from ..services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate,get_route_by_id
@@ -48,15 +50,15 @@ def get_single_route_by_id(id: int, db: Session = Depends(get_db)):
 
 
 @route_router.post("/routes", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
-def post_route(info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
+def post_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id, db)
 
 
 @route_router.put("/routes/{id}", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
-def update_route(id, info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
+def update_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],id, info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return update(id, info.days, info.stations, info.company_id, db)
 
 
 @route_router.put("/routes/activate/{id}", status_code=status.HTTP_202_ACCEPTED, tags=["route"])
-def activate_deactivate_route(id, should_be_activated: bool, db: Session = Depends(get_db)):
+def activate_deactivate_route(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],id, should_be_activated: bool, db: Session = Depends(get_db)):
     return activate_deactivate(id=id, should_be_activated=should_be_activated, db=db)

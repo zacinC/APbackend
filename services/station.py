@@ -5,8 +5,8 @@ from ..database import models
 from ..schemas import schemas
 
 
-def get_stations(db: Session):
-    return db.query(models.Station).all()
+def get_stations(page_number:int,db: Session):
+    return db.query(models.Station).offset((page_number-1)*10).limit(10).all()
 
 def get_stations_count(db: Session):
     return db.query(func.count(models.Station.id)).scalar()
