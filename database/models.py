@@ -20,7 +20,8 @@ RouteStationAssociation = Table(
     Column('route_id', Integer, ForeignKey('route.id')),
     Column('station_id', Integer, ForeignKey('station.id')),
     Column('departure_time', Time, nullable=True),
-    Column('arrival_time', Time, nullable=True)
+    Column('arrival_time', Time, nullable=True),
+    Column('price',DECIMAL(5,2))
 )
 
 

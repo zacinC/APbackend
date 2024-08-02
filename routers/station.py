@@ -5,15 +5,21 @@ from fastapi import Depends
 from fastapi import APIRouter, status
 
 from ..database.dbconfig import get_db
-from ..services.station import get_stations, add_station, update_station, get_stations_filtered, delete_station_id
+from ..services.station import get_stations, add_station, update_station, get_stations_filtered, delete_station_id,get_stations_count
 from ..schemas import schemas
 
 station_router = APIRouter()
 
+@station_router.get("/stations/count", response_model=int, tags=["station"])
+def get_all_stations_count(db: Session = Depends(get_db)):
+    return get_stations_count(db = db)
 
-@station_router.get("/stations", response_model=List[schemas.Station], tags=["station"])
-def get_all_stations(db: Session = Depends(get_db)):
-    return get_stations(db)
+@station_router.get("/stations/{page_number}", response_model=List[schemas.Station], tags=["station"])
+def get_all_stations(page_number:int,db: Session = Depends(get_db)):
+    return get_stations(page_number = page_number,db = db)
+
+
+
 
 
 @station_router.get("/stations-filtered", response_model=List[schemas.Station], tags=["station"])

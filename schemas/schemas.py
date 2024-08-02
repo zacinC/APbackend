@@ -8,6 +8,7 @@ from datetime import datetime, time
 
 
 class NewsBase(BaseModel):
+    
     title: str
     content: str
     is_active: bool = True
@@ -50,6 +51,7 @@ class UserBase(BaseModel):
     username: str = Field(unique=True, index=True, max_length=30)
     full_name: str
     phone_number: str
+    disabled: Optional[bool] = False
 
 
 class UserCreate(UserBase):
@@ -64,6 +66,8 @@ class UserRegister(BaseModel):
     phone_number: str
     password: str = Field(min_length=8, max_length=40)
     role_type: str = "Passenger"
+    company_id: Optional[int] = None
+
 
 
 class User(UserBase):
@@ -131,7 +135,7 @@ class RouteBase(BaseModel):
     departure_time: time
     arrival_time: time
     price: Decimal
-    is_active: bool
+    is_active: Optional[bool] = False
 
 
 class RouteCreate(RouteBase):
@@ -281,6 +285,8 @@ class RouteStationFormatted(BaseModel):
     station: StationFormatted
     arrival_time: Optional[time]
     departure_time: Optional[time]
+    price:Optional[float] = None
+
 
     class Config:
         orm_mode: True
@@ -299,6 +305,7 @@ class RouteStation2(BaseModel):
     station_id: int
     departure_time: Optional[time] = None
     arrival_time: Optional[time] = None
+    price:Optional[float] = None
 
 
 class RouteCreateRequest(BaseModel):

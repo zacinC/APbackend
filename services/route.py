@@ -5,14 +5,14 @@ from ..database import models
 import datetime
 
 
-def get_routes(db: Session,is_active:Optional[bool] = None):
+def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
         .filter(models.Company.id == models.RouteDay.company_id,
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
                 models.Station.id == models.RouteStationAssociation.columns.get(
                     "station_id")
-                ).all()
+                ).offset((page_number-1)*10).limit(10).all()
 
     grouped_results = {}
 
@@ -20,10 +20,6 @@ def get_routes(db: Session,is_active:Optional[bool] = None):
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
 
-    print(all_active,all_inactive)
-
-        
-
 
     for item in routes_filtered:
         route_id = item[0]
@@ -43,9 +39,10 @@ def get_routes(db: Session,is_active:Optional[bool] = None):
                 "route_id":item[0]
             }
 
-        grouped_results[route_id]["stations"].append({"station": item[8],
+        grouped_results[route_id]["stations"].append({"station": item[9],
                                                       "arrival_time": item[7],
-                                                      "departure_time": item[6]
+                                                      "departure_time": item[6],
+                                                      "price":item[8]
                                                       })
 
     final_list = []
@@ -53,26 +50,26 @@ def get_routes(db: Session,is_active:Optional[bool] = None):
     for key, value in grouped_results.items():
         final_list.append(value)
 
-    print(final_list)
+ 
 
     return final_list
 
 
-def get_routes_filtered_by_company(db: Session, companyname: str,is_active:Optional[int] = None):
+def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str,is_active:Optional[int] = None):
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
         .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
                 models.Station.id == models.RouteStationAssociation.columns.get(
                     "station_id")
-                ).all()
+                ).offset((page_number-1)*10).limit(10).all()
 
     grouped_results = {}
 
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
 
-    print(all_active,all_inactive)
+    print("aaaaaaaaaa",routes_filtered)
 
 
 
@@ -94,9 +91,11 @@ def get_routes_filtered_by_company(db: Session, companyname: str,is_active:Optio
                 "route_id":item[0]
             }
 
-        grouped_results[route_id]["stations"].append({"station": item[8],
+        grouped_results[route_id]["stations"].append({"station": item[9],
                                                       "arrival_time": item[7],
-                                                      "departure_time": item[6]
+                                                      "departure_time": item[6],
+                                                      "price":item[8]
+
                                                       })
 
     final_list = []
@@ -109,7 +108,7 @@ def get_routes_filtered_by_company(db: Session, companyname: str,is_active:Optio
     return final_list
 
 
-def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
+def get_routes_filtered(page_number:int,db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
     day_of_week_full = None
     if date:
         day_of_week_full = date.strftime('%A')
@@ -161,8 +160,11 @@ def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity:
                models.RouteStationAssociation.columns.get(
                'station_id') == models.Station.id,
                models.RouteDayAssociation.columns.get('day_name') == day_of_week_full).order_by(models.RouteStationAssociation.columns.get('id'))  \
-        .all()
+        .offset((page_number-1)*10).limit(10).all()
     grouped_results = {}
+
+    print("aaaaaaaaaa",routes_filtered)
+
 
     for item in routes_filtered:
         route_id = item[1]
@@ -173,9 +175,11 @@ def get_routes_filtered(db: Session, startCity: str, startCountry: str, endCity:
                 "route_id":item[1]
             }
 
-        grouped_results[route_id]["stations"].append({"station": item[9],
+        grouped_results[route_id]["stations"].append({"station": item[10],
                                                       "arrival_time": item[8],
-                                                      "departure_time": item[7]
+                                                      "departure_time": item[7],
+                                                      "price":item[9]
+
                                                       })
 
     final_list = []
@@ -215,10 +219,10 @@ def delete_routeID(db: Session, id: int, day_name: str):
 def create_route(days: List[models.Day], stations: List, company_id: int, db: Session):
     startStation = stations[0]
     endStation = stations[-1]
-    route_price = endStation.price;
+    route_price = endStation.price
 
     new_route = models.Route(departure_station_id=startStation.station_id, arrival_station_id=endStation.station_id,
-                             arrival_time=endStation.arrival_time, departure_time=startStation.departure_time,price = route_price)
+                             arrival_time=endStation.arrival_time, departure_time=startStation.departure_time,price = route_price,is_active = False)
 
     db.add(new_route)
     db.commit()
@@ -266,7 +270,8 @@ def get_all_active(db:Session):
     routes = db.query(models.Route.id).filter(models.Route.is_active == 1).all()
     return [route[0] for route in routes]
 
-def get_route_by_id(db:Session,id:int):
+def get_route_by_id(id:int,db:Session):
+    print("ID",id)
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
         .filter(models.Company.id == models.RouteDay.company_id,
                 id == models.RouteDay.route_id,
@@ -275,10 +280,6 @@ def get_route_by_id(db:Session,id:int):
                 ).all()
 
     grouped_results = {}
-
-
-        
-
 
     for item in routes_filtered:
         route_id = item[0]
@@ -290,11 +291,11 @@ def get_route_by_id(db:Session,id:int):
                 "route_id":item[0]
             }
 
-        grouped_results[route_id]["stations"].append({"station": item[8],
+        grouped_results[route_id]["stations"].append({"station": item[9],
                                                       "arrival_time": item[7],
-                                                      "departure_time": item[6]
+                                                      "departure_time": item[6],
+                                                      "price":item[8]
                                                       })
-
     final_list = []
 
     for key, value in grouped_results.items():

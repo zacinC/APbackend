@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from ..auth.utils import get_password_hash
 from ..database import models
 from ..schemas import schemas
+from ..auth import utils
 
 
 def get_users(db: Session, page_number):
@@ -68,15 +69,28 @@ def delete_user_by_id(id: int, db: Session):
 
 # Ovo treba da bude update user
 
-
-def update_role_by_id(id: int, role_type: str, db: Session) -> models.User:
+def update_single_user(id: int, update:schemas.UserRegister, db: Session) -> models.User:
 
     user_to_update = db.query(models.User).filter(models.User.id == id).first()
     if not user_to_update:
         raise HTTPException(
             status_code=404, detail=f'User with {id} not found!')
-
-    user_to_update.role_type = role_type
+    
+    if update.role_type:
+        user_to_update.role_type = update.role_type
+    if update.email != user_to_update.email:
+        user_to_update.email = update.email
+    if update.full_name != user_to_update.full_name:
+        user_to_update.full_name = update.full_name
+    if update.password:
+        user_to_update.hashed_password = utils.get_password_hash(update.password)
+    if update.username != user_to_update.username:
+        user_to_update.username = update.username
+    if update.phone_number:
+        user_to_update.phone_number = update.phone_number
+    if update.company_id:
+        user_to_update.company_id = update.company_id
+    
 
     db.commit()
 

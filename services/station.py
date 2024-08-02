@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from ..database import models
 from ..schemas import schemas
 
@@ -8,15 +8,20 @@ from ..schemas import schemas
 def get_stations(db: Session):
     return db.query(models.Station).all()
 
+def get_stations_count(db: Session):
+    return db.query(func.count(models.Station.id)).scalar()
+
 
 def get_stations_filtered(db: Session, search: str):
-    return db.query(models.Station).filter(
+    stations = db.query(models.Station).filter(
         or_(
             models.Station.address.like(f'%{search}%'),
             models.Station.city_name.like(f'%{search}%'),
             models.Station.country_name.like(f'%{search}%')
         )
     ).all()
+
+    return stations
 
 
 def add_station(station: schemas.StationCreate, db: Session):
