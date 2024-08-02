@@ -96,6 +96,9 @@ class User(UserBase):
 
 class UserPublic(UserBase):
     id: int
+    role_type: Optional[str] = Field(default="Passenger")
+    company_id: Optional[int] = None
+    tickets: List['Ticket'] = []
 
 # Company Schema
 

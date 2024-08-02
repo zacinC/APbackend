@@ -13,9 +13,10 @@ from ..schemas import schemas
 user_router = APIRouter()
 
 
-@user_router.get("/user/me", response_model=schemas.User, tags=['user'])
+@user_router.get("/user/me", response_model=schemas.UserPublic, tags=['user'])
 async def read_users_me(
-    current_user: Annotated[schemas.User, Depends(get_current_active_user)]
+    current_user: Annotated[schemas.UserPublic,
+                            Depends(get_current_active_user)]
 ):
     return current_user
 
