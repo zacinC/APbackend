@@ -16,10 +16,10 @@ ticket_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@ticket_router.get("/tickets", response_model=List[schemas.Ticket], tags=["tickets"])
-async def get_all_tickets_one_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+@ticket_router.get("/tickets/{page_number}", response_model=List[schemas.Ticket], tags=["tickets"])
+async def get_all_tickets_one_user(page_number:int,db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     current_user: schemas.UserBase = await get_current_user(token=token, db=db)
-    tickets = get_tickets_one_user(db, current_user)
+    tickets = get_tickets_one_user(db, current_user,page_number)
     return tickets
 
 

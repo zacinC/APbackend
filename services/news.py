@@ -25,18 +25,18 @@ def extract_public_id(image_url: str) -> str:
     return image_url.split('/')[-1].split('.')[0]
 
 
-def get_news(db: Session):
-    return db.query(models.News).order_by(models.News.id).all()
+def get_news(db: Session,page_number):
+    return db.query(models.News).order_by(models.News.id).offset((page_number-1)*10).limit(10).all()
 
 
-def get_news_filtered(db: Session,search:str):
+def get_news_filtered(db: Session,search:str,page_number:int):
 
         return db.query(models.News).filter(
             or_(
                 models.News.content.like(f'%{search}%'),
                 models.News.title.like(f'%{search}%')
             )
-        ).order_by(models.News.id).all()
+        ).order_by(models.News.id).offset((page_number-1)*10).limit(10).all()
 
 def upload_news(db: Session, notif: schemas.NewsCreate):
 

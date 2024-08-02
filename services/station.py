@@ -5,8 +5,8 @@ from ..database import models
 from ..schemas import schemas
 
 
-def get_stations(db: Session):
-    return db.query(models.Station).all()
+def get_stations(db: Session,page_number:int):
+    return db.query(models.Station).offset((page_number-1)*10).limit(10).all()
 
 
 def get_stations_filtered(db: Session, search: str):
@@ -16,7 +16,7 @@ def get_stations_filtered(db: Session, search: str):
             models.Station.city_name.like(f'%{search}%'),
             models.Station.country_name.like(f'%{search}%')
         )
-    ).all()
+    ).limit(10).all()
 
 
 def add_station(station: schemas.StationCreate, db: Session):

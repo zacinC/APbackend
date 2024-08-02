@@ -5,22 +5,23 @@ from fastapi import Depends
 from fastapi import APIRouter, status
 
 from ..database.dbconfig import get_db
-from ..services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate
+from ..services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate,get_route_by_id
 from ..schemas import schemas
 from datetime import datetime
 
 route_router = APIRouter()
 
 
-@route_router.get("/routes", response_model=List[schemas.RouteResponse], tags=["route"])
-def get_all_routes(companyname: Optional[str] = None, db: Session = Depends(get_db),is_active:Optional[int] = None):
+@route_router.get("/routes_paginated/{page_number}", response_model=List[schemas.RouteResponse], tags=["route"])
+def get_all_routes(page_number:int,companyname: Optional[str] = None, db: Session = Depends(get_db),is_active:Optional[int] = None):
     if companyname:
-        return get_routes_filtered_by_company(db, companyname,is_active)
-    return get_routes(db,is_active)
+        return get_routes_filtered_by_company(page_number,db, companyname,is_active)
+    return get_routes(page_number,db,is_active)
 
 
-@route_router.get("/routes/filtered", response_model=List[schemas.RouteResponse], tags=["route"])
+@route_router.get("/routes/filtered/{page_number}", response_model=List[schemas.RouteResponse], tags=["route"])
 def get_filtered_routes(
+        page_number:int,
         startCity: Optional[str] = None,
         startCountry: Optional[str] = None,
         endCity: Optional[str] = None,  
@@ -31,7 +32,7 @@ def get_filtered_routes(
         db: Session = Depends(get_db)):
         
 
-    all_routes_filtered = get_routes_filtered(
+    all_routes_filtered = get_routes_filtered(page_number,
         db, startCity, startCountry, endCity, endCountry, date,price_from,price_to)
     return all_routes_filtered
 
@@ -42,8 +43,8 @@ def delete_route(id: int, day_name: Optional[str] = None, db: Session = Depends(
     return delete_routeID(db, id, day_name)
 
 @route_router.get("/routes/{id}", response_model=List[schemas.RouteResponse], tags=["route"])
-def get_route_by_id(id: int, db: Session = Depends(get_db)):
-    return get_routes(db, id)
+def get_single_route_by_id(id: int, db: Session = Depends(get_db)):
+    return get_route_by_id(id,db)
 
 
 @route_router.post("/routes", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])

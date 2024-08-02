@@ -11,9 +11,9 @@ from ..schemas import schemas
 station_router = APIRouter()
 
 
-@station_router.get("/stations", response_model=List[schemas.Station], tags=["station"])
-def get_all_stations(db: Session = Depends(get_db)):
-    return get_stations(db)
+@station_router.get("/stations/{page_number}", response_model=List[schemas.Station], tags=["station"])
+def get_all_stations(page_number:int,db: Session = Depends(get_db)):
+    return get_stations(page_number = page_number,db = db)
 
 
 @station_router.get("/stations-filtered", response_model=List[schemas.Station], tags=["station"])

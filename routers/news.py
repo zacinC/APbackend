@@ -11,14 +11,14 @@ from ..schemas import schemas
 news_router = APIRouter()
 
 
-@news_router.get("/news", response_model=List[schemas.News], tags=["news"])
-def get_all_news(db: Session = Depends(get_db)):
-    return get_news(db)
+@news_router.get("/news/{page_number}", response_model=List[schemas.News], tags=["news"])
+def get_all_news(page_number:int,db: Session = Depends(get_db)):
+    return get_news(db,page_number)
 
 
-@news_router.get("/news-filtered", response_model=List[schemas.News], tags=["news"])
-def get_all_news_filtered(search:str,db: Session = Depends(get_db)):
-    return get_news_filtered(db,search)
+@news_router.get("/news-filtered/{page_number}", response_model=List[schemas.News], tags=["news"])
+def get_all_news_filtered(page_number:int,search:str,db: Session = Depends(get_db)):
+    return get_news_filtered(db,search,page_number)
 
 
 
