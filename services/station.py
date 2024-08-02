@@ -1,22 +1,27 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from ..database import models
 from ..schemas import schemas
 
 
-def get_stations(db: Session,page_number:int):
-    return db.query(models.Station).offset((page_number-1)*10).limit(10).all()
+def get_stations(db: Session):
+    return db.query(models.Station).all()
+
+def get_stations_count(db: Session):
+    return db.query(func.count(models.Station.id)).scalar()
 
 
 def get_stations_filtered(db: Session, search: str):
-    return db.query(models.Station).filter(
+    stations = db.query(models.Station).filter(
         or_(
             models.Station.address.like(f'%{search}%'),
             models.Station.city_name.like(f'%{search}%'),
             models.Station.country_name.like(f'%{search}%')
         )
-    ).limit(10).all()
+    ).all()
+
+    return stations
 
 
 def add_station(station: schemas.StationCreate, db: Session):

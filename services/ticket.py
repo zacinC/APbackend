@@ -21,6 +21,22 @@ def get_tickets_one_user(
         models.Ticket.passenger_id == user.id).order_by(models.Ticket.departure_date_time).offset((page_number-1)*10).limit(10).all()
     return all_tickets
 
+def get_tickets_one_user_count(
+    db: Session,
+    current_user: schemas.UserBase,
+):
+    user = db.query(models.User).filter(
+        models.User.username == current_user.username).first()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="User not authorized!")
+
+    all_tickets = db.query(models.Ticket).filter(
+        models.Ticket.passenger_id == user.id).order_by(models.Ticket.departure_date_time).all()
+    
+    return len(all_tickets)
+
+
 
 def create_ticket(db: Session, ticket: schemas.Ticket, current_user: schemas.UserBase):
     user = db.query(models.User).filter(

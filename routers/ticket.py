@@ -8,12 +8,17 @@ from fastapi import APIRouter, status
 from ..auth.deps import get_current_user
 
 from ..database.dbconfig import get_db
-from ..services.ticket import get_tickets_one_user, create_ticket, delete_ticket_user
+from ..services.ticket import get_tickets_one_user, create_ticket, delete_ticket_user,get_tickets_one_user_count
 from ..schemas import schemas
 
 ticket_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@ticket_router.get("/tickets/count",response_model = int,tags = ["tickets"])
+async def get_count_tickets(db:Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    current_user: schemas.UserBase = await get_current_user(token=token, db=db)
+    return get_tickets_one_user_count(db,current_user)
 
 
 @ticket_router.get("/tickets/{page_number}", response_model=List[schemas.Ticket], tags=["tickets"])

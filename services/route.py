@@ -20,10 +20,6 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
 
-    print("aaaa",routes_filtered)
-
-        
-
 
     for item in routes_filtered:
         route_id = item[0]
@@ -54,7 +50,7 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     for key, value in grouped_results.items():
         final_list.append(value)
 
-    print(final_list)
+ 
 
     return final_list
 
