@@ -4,13 +4,20 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
 
-from ..auth.deps import get_current_admin_user
+from ..auth.deps import get_current_active_user, get_current_admin_user
 
 from ..database.dbconfig import get_db
 from ..services.user import create_user, get_users, get_user_by_email, get_users_filtered, get_user_by_username, delete_user_by_id, update_single_user
 from ..schemas import schemas
 
 user_router = APIRouter()
+
+
+@user_router.get("/user/me", response_model=schemas.User, tags=['user'])
+async def read_users_me(
+    current_user: Annotated[schemas.User, Depends(get_current_active_user)]
+):
+    return current_user
 
 
 @user_router.get("/users/{page_number}", response_model=list[schemas.User], tags=["user"])
