@@ -51,7 +51,7 @@ class UserBase(BaseModel):
     username: str = Field(unique=True, index=True, max_length=30)
     full_name: str
     phone_number: str
-    disabled: Optional[bool] = False
+    disabled: bool = True
 
 
 class UserCreate(UserBase):
@@ -67,6 +67,18 @@ class UserRegister(BaseModel):
     password: str = Field(min_length=8, max_length=40)
     role_type: str = "Passenger"
     company_id: Optional[int] = None
+
+
+class UserUpdate(BaseModel):
+    email: EmailStr = Field(unique=True, index=True,
+                            max_length=255, default=None)
+    username: str = Field(unique=True, index=True, max_length=30, default=None)
+    full_name: str = None
+    phone_number: str = None
+    password: str = Field(min_length=8, max_length=40, default=None)
+    role_type: str = None
+    company_id: Optional[int] = None
+    disabled: Optional[bool] = None
 
 
 class User(UserBase):

@@ -21,7 +21,7 @@ RouteStationAssociation = Table(
     Column('station_id', Integer, ForeignKey('station.id')),
     Column('departure_time', Time, nullable=True),
     Column('arrival_time', Time, nullable=True),
-    Column('price',DECIMAL(5,2))
+    Column('price', DECIMAL(5, 2))
 )
 
 
@@ -54,6 +54,7 @@ class User(Base):
     full_name = Column(String(35))
     hashed_password = Column(String(200))
     phone_number = Column(String(25))
+    disabled = Column(Boolean, default=True)
     company_id = Column(Integer, ForeignKey("company.id"))
     role_type = Column(String(10), ForeignKey("role.type"))
 

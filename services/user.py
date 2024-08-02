@@ -70,28 +70,30 @@ def delete_user_by_id(id: int, db: Session):
 # Ovo treba da bude update user
 
 
-def update_single_user(id: int, update: schemas.UserRegister, db: Session) -> models.User:
+def update_single_user(id: int, updated_user: schemas.UserUpdate, db: Session) -> models.User:
 
     user_to_update = db.query(models.User).filter(models.User.id == id).first()
     if not user_to_update:
         raise HTTPException(
             status_code=404, detail=f'User with {id} not found!')
 
-    if update.role_type:
-        user_to_update.role_type = update.role_type
-    if update.email != user_to_update.email:
-        user_to_update.email = update.email
-    if update.full_name != user_to_update.full_name:
-        user_to_update.full_name = update.full_name
-    if update.password:
+    if updated_user.role_type:
+        user_to_update.role_type = updated_user.role_type
+    if updated_user.email and updated_user.email != user_to_update.email:
+        user_to_update.email = updated_user.email
+    if updated_user.full_name and updated_user.full_name != user_to_update.full_name:
+        user_to_update.full_name = updated_user.full_name
+    if updated_user.password:
         user_to_update.hashed_password = utils.get_password_hash(
-            update.password)
-    if update.username != user_to_update.username:
-        user_to_update.username = update.username
-    if update.phone_number:
-        user_to_update.phone_number = update.phone_number
-    if update.company_id:
-        user_to_update.company_id = update.company_id
+            updated_user.password)
+    if updated_user.username and updated_user.username != user_to_update.username:
+        user_to_update.username = updated_user.username
+    if updated_user.phone_number:
+        user_to_update.phone_number = updated_user.phone_number
+    if updated_user.company_id:
+        user_to_update.company_id = updated_user.company_id
+    if updated_user.disabled and updated_user.disabled != user_to_update.disabled:
+        user_to_update.disabled = updated_user.disabled
 
     db.commit()
 

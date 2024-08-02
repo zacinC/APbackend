@@ -7,7 +7,7 @@ from ..schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from ..auth.security import authenticate_user, create_access_token
-from ..auth.deps import get_current_user
+from ..auth.deps import get_current_active_user, get_current_user
 from ..auth.utils import generate_password_reset_email, get_password_hash, send_email, verify_password_reset_token, generate_password_reset_token
 from fastapi import Depends, APIRouter, Form, HTTPException, Request, status
 from datetime import timedelta
@@ -42,11 +42,11 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-# @login_router.get("/user/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
-# async def read_users_me(
-#     current_user: Annotated[UserBase, Depends(get_current_user)]
-# ):
-#     return current_user
+@login_router.get("/user/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
+async def read_users_me(
+    current_user: Annotated[UserBase, Depends(get_current_active_user)]
+):
+    return current_user
 
 
 # @login_router.post("/reset-password", response_model=None)
