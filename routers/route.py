@@ -75,7 +75,7 @@ def get_single_route_by_id(id: int, db: Session = Depends(get_db)):
 
 
 @route_router.post("/routes", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
-def post_route(info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
+def post_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id, db)
 
 
