@@ -52,11 +52,12 @@ class UserBase(BaseModel):
     full_name: str
     phone_number: str
     disabled: bool = True
+    role_type: Optional[str] = Field(default="Passenger")
+
 
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
-    role_type: Optional[str] = Field(default="Passenger")
 
 
 class UserRegister(BaseModel):
