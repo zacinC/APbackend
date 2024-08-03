@@ -6,31 +6,45 @@ import datetime
 
 
 def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
-    routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
-        .filter(models.Company.id == models.RouteDay.company_id,
-                models.RouteStationAssociation.columns.get(
-                    "route_id") == models.RouteDay.route_id,
-                models.Station.id == models.RouteStationAssociation.columns.get(
-                    "station_id")
-                ).offset((page_number-1)*10).limit(10).all()
+
+    all_active = get_all_active(db)
+    all_inactive = get_all_inactive(db)
+    routes_filtered = None
+
+
+    if not is_active:
+        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id,
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
+    else:
+        if is_active == -1:
+            routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id,
+                    models.RouteDayAssociation.columns.get("route_id").in_(all_inactive),
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
+        
+        else:
+            routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id,
+                    models.RouteDayAssociation.columns.get("route_id").in_(all_active),
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
 
     grouped_results = {}
 
-    
-    all_active = get_all_active(db)
-    all_inactive = get_all_inactive(db)
-
-
     for item in routes_filtered:
         route_id = item[0]
-
-        if is_active and is_active == 1:
-            if route_id not in all_active:
-                continue
-        
-        if is_active and is_active == -1:
-            if route_id not in all_inactive:
-                continue
 
         if route_id not in grouped_results:
             grouped_results[route_id] = {
@@ -56,33 +70,46 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
 
 
 def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str,is_active:Optional[int] = None):
-    routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
-        .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
-                models.RouteStationAssociation.columns.get(
-                    "route_id") == models.RouteDay.route_id,
-                models.Station.id == models.RouteStationAssociation.columns.get(
-                    "station_id")
-                ).offset((page_number-1)*10).limit(10).all()
-
-    grouped_results = {}
 
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
-
-    print("aaaaaaaaaa",routes_filtered)
-
+    routes_filtered = None
 
 
+    if not is_active:
+        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
+    else:
+        if is_active == -1:
+            routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
+                    models.RouteDayAssociation.columns.get("route_id").in_(all_inactive),
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
+        
+        else:
+            routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
+                    models.RouteDayAssociation.columns.get("route_id").in_(all_active),
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).offset((page_number-1)*10).limit(10).all()
+            
+    grouped_results = {}
+    
     for item in routes_filtered:
         route_id = item[0]
 
-        if is_active and is_active == 1:
-            if route_id not in all_active:
-                continue
-        
-        if is_active and is_active == -1:
-            if route_id not in all_inactive:
-                continue
 
         if route_id not in grouped_results:
             grouped_results[route_id] = {
@@ -159,6 +186,10 @@ def get_routes_filtered(page_number:int,db: Session, startCity: str, startCountr
                'route_id') == models.RouteStationAssociation.columns.get('route_id'),
                models.RouteStationAssociation.columns.get(
                'station_id') == models.Station.id,
+               models.RouteStationAssociation.columns.get(
+               'route_id').in_(get_all_active(db)),
+               models.RouteStationAssociation.columns.get(
+               'route_id').in_(routesIds),
                models.RouteDayAssociation.columns.get('day_name') == day_of_week_full).order_by(models.RouteStationAssociation.columns.get('id'))  \
         .offset((page_number-1)*10).limit(10).all()
     grouped_results = {}
