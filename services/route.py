@@ -260,31 +260,50 @@ def delete_routeID(db: Session, id: int, day_name: str):
 
 
 def create_route(days: List[models.Day], stations: List, company_id: int, db: Session):
-    startStation = stations[0]
-    endStation = stations[-1]
-    route_price = endStation.price
+    
+    for i in range(len(stations)):
+        for j in range(i+1,len(stations)):
+            startStation = stations[i]
+            endStation = stations[j]
+            
+            route_price = endStation.price
 
-    new_route = models.Route(departure_station_id=startStation.station_id, arrival_station_id=endStation.station_id,
-                             arrival_time=endStation.arrival_time, departure_time=startStation.departure_time,price = route_price,is_active = False)
+            if(i!=0):
+                route_price-=startStation.price
 
-    db.add(new_route)
-    db.commit()
+            new_route = models.Route(departure_station_id=startStation.station_id, arrival_station_id=endStation.station_id,
+                                    arrival_time=endStation.arrival_time, departure_time=startStation.departure_time,price = route_price,is_active = False)
 
-    for day in days:
-        route_day = models.RouteDay(
-            day_name=day.day_name, route_id=new_route.id, company_id=company_id)
-        db.add(route_day)
+            db.add(new_route)
+            db.commit()
 
-    for station in stations:
-        route_station = models.RouteStation(
-            route_id=new_route.id,
-            station_id=station.station_id,
-            departure_time=station.departure_time,
-            arrival_time=station.arrival_time
-        )
-        db.add(route_station)
+            for day in days:
+                route_day = models.RouteDay(
+                    day_name=day.day_name, route_id=new_route.id, company_id=company_id)
+                db.add(route_day)
+            
+      
+            for k in range(i,j+1):
+                station = stations[k]
+                print("start",startStation.price,"end",endStation.price)
+                pricee = None
+                if k != i:
+                    if not startStation.price:
+                        pricee = stations[k].price
+                    else:
+                        pricee = stations[k].price - startStation.price
+                
+            
+                route_station = models.RouteStation(
+                    route_id=new_route.id,
+                    station_id=station.station_id,
+                    departure_time=station.departure_time,
+                    arrival_time=station.arrival_time,
+                    price=pricee
+                )
+                db.add(route_station)
 
-    db.commit()
+            db.commit()
 
     return new_route
 

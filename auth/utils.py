@@ -82,6 +82,7 @@ def render_email_template(context: dict) -> str:
     return html_content
 
 
+
 def send_email(user: UserBase, html_content, subject):
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key['api-key'] = BREVO_API_KEY

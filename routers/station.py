@@ -39,6 +39,6 @@ def put_station(current_user: Annotated[schemas.User, Depends(get_current_admin_
     return update_station(station, id, db)
 
 
-@station_router.delete("/stations/{id}", tags=["stations"])
+@station_router.delete("/stations/{id}", tags=["station"])
 def delete_station(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],id: int, db: Session = Depends(get_db)):
     return delete_station_id(id, db)

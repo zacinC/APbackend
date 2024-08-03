@@ -325,7 +325,6 @@ class RouteStation2(BaseModel):
 
 class RouteCreateRequest(BaseModel):
     stations: List[RouteStation2]
-    company_id: int
     days: List[DayBase]
 
     class Config:
