@@ -42,13 +42,6 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@login_router.get("/user/me", response_model=UserBase, tags=['login', 'test access token', 'get current user'])
-async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_active_user)]
-):
-    return current_user
-
-
 # @login_router.post("/reset-password", response_model=None)
 # def reset_password(body: NewPassword, db: Session = Depends(get_db)):
 #     email = verify_password_reset_token(token=body.token)
