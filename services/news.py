@@ -1,4 +1,5 @@
 import json
+from math import ceil
 from pathlib import Path
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -30,7 +31,7 @@ def get_news(db: Session,page_number):
     return db.query(models.News).order_by(models.News.id).offset((page_number-1)*10).limit(10).all()
 
 def get_news_count(db: Session):
-    return db.query(func.count(models.News.id)).scalar()
+    return ceil(db.query(func.count(models.News.id)).scalar() / 10)
 
 
 def get_news_filtered(db: Session,search:str,page_number:int):
@@ -52,7 +53,7 @@ def get_news_filtered_count(db: Session,search:str):
             )
         ).all()
 
-        return len(news)
+        return ceil(len(news) / 10)
 
 def upload_news(db: Session, notif: schemas.NewsCreate):
 

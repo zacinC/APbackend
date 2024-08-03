@@ -1,8 +1,10 @@
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
+
+from AutobuskeBackend.auth.deps import get_current_admin_user
 
 from ..database.dbconfig import get_db
 from ..services.news import get_news, upload_news, delete, update,get_news_filtered,get_news_count,get_news_filtered_count
@@ -31,15 +33,15 @@ def get_all_news_filtered(page_number:int,search:str,db: Session = Depends(get_d
 
 
 @news_router.post("/news", response_model=schemas.News, tags=["news"])
-def add(notif: schemas.NewsCreate, db: Session = Depends(get_db)):
+def add(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],notif: schemas.NewsCreate, db: Session = Depends(get_db)):
     return upload_news(db=db, notif=notif)
 
 
 @news_router.delete("/news/{id}", status_code=status.HTTP_204_NO_CONTENT, tags=["news"])
-def delete_news(id: int, db: Session = Depends(get_db)):
+def delete_news(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],id: int, db: Session = Depends(get_db)):
     return delete(db=db, id=id)
 
 
 @news_router.put("/news/{id}", response_model=schemas.News, tags=["news"])
-def update_news(notif: schemas.NewsCreate, id: int, db: Session = Depends(get_db)):
+def update_news(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],notif: schemas.NewsCreate, id: int, db: Session = Depends(get_db)):
     return update(db=db, id=id, notif=notif)
