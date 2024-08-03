@@ -21,7 +21,7 @@ def get_all_routes(page_number:int,companyname: Optional[str] = None, db: Sessio
     return get_routes(page_number,db,is_active)
 
 
-@route_router.get("/routes/filtered/{page_number}", response_model=List[schemas.RouteResponse], tags=["route"])
+@route_router.get("/routes_filtered/{page_number}", response_model=List[schemas.RouteResponse], tags=["route"])
 def get_filtered_routes(
         page_number:int,
         startCity: Optional[str] = None,
@@ -50,7 +50,7 @@ def get_single_route_by_id(id: int, db: Session = Depends(get_db)):
 
 
 @route_router.post("/routes", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
-def post_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
+def post_route(info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
     return create_route(info.days, info.stations, info.company_id, db)
 
 
