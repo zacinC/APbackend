@@ -1,4 +1,5 @@
 import json
+from math import ceil
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..database import models
@@ -34,7 +35,7 @@ def get_tickets_one_user_count(
     all_tickets = db.query(models.Ticket).filter(
         models.Ticket.passenger_id == user.id).order_by(models.Ticket.departure_date_time).all()
     
-    return len(all_tickets)
+    return ceil(len(all_tickets) / 10)
 
 
 
