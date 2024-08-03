@@ -19,7 +19,7 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
     else:
         if is_active == -1:
             routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
@@ -29,7 +29,7 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
         
         else:
             routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
@@ -39,7 +39,7 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
 
     grouped_results = {}
 
@@ -61,11 +61,11 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
 
     final_list = []
 
-    for key, value in grouped_results.items():
-        final_list.append(value)
+    values_list = list(grouped_results.values())
 
- 
-
+    for i in range(0,10):
+        final_list.append(values_list[(page_number-1)*10 + i])
+    
     return final_list
 
 
@@ -83,7 +83,7 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
     else:
         if is_active == -1:
             routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
@@ -93,7 +93,7 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
         
         else:
             routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
@@ -103,7 +103,7 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
                         "station_id")
-                    ).offset((page_number-1)*10).limit(10).all()
+                    ).all()
             
     grouped_results = {}
     
@@ -127,11 +127,11 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
 
     final_list = []
 
-    for key, value in grouped_results.items():
-        final_list.append(value)
+    values_list = list(grouped_results.values())
 
-    print(final_list)
-
+    for i in range(0,10):
+        final_list.append(values_list[(page_number-1)*10 + i])
+    
     return final_list
 
 
