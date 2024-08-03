@@ -64,6 +64,8 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     values_list = list(grouped_results.values())
 
     for i in range(0,10):
+        if((page_number-1)*10 + i >= len(values_list)):
+            break
         final_list.append(values_list[(page_number-1)*10 + i])
     
     return final_list
@@ -130,6 +132,8 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
     values_list = list(grouped_results.values())
 
     for i in range(0,10):
+        if((page_number-1)*10 + i >= len(values_list)):
+            break
         final_list.append(values_list[(page_number-1)*10 + i])
     
     return final_list
