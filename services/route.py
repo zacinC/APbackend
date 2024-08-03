@@ -1,3 +1,4 @@
+from math import ceil
 from typing import List, Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -5,7 +6,7 @@ from ..database import models
 import datetime
 
 
-def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
+def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool] = None):
 
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
@@ -62,6 +63,8 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     final_list = []
 
     values_list = list(grouped_results.values())
+    if return_count:
+        return ceil(len(values_list) / 10)
 
     for i in range(0,10):
         if((page_number-1)*10 + i >= len(values_list)):
@@ -71,7 +74,7 @@ def get_routes(page_number,db: Session,is_active:Optional[bool] = None):
     return final_list
 
 
-def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str,is_active:Optional[int] = None):
+def get_routes_filtered_by_company(return_count:bool,page_number:int,db: Session, companyname: str,is_active:Optional[int] = None):
 
     all_active = get_all_active(db)
     all_inactive = get_all_inactive(db)
@@ -131,6 +134,9 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
 
     values_list = list(grouped_results.values())
 
+    if return_count:
+        return ceil(len(values_list) / 10) 
+
     for i in range(0,10):
         if((page_number-1)*10 + i >= len(values_list)):
             break
@@ -139,7 +145,7 @@ def get_routes_filtered_by_company(page_number:int,db: Session, companyname: str
     return final_list
 
 
-def get_routes_filtered(page_number:int,db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
+def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
     day_of_week_full = None
     if date:
         day_of_week_full = date.strftime('%A')
@@ -195,10 +201,8 @@ def get_routes_filtered(page_number:int,db: Session, startCity: str, startCountr
                models.RouteStationAssociation.columns.get(
                'route_id').in_(routesIds),
                models.RouteDayAssociation.columns.get('day_name') == day_of_week_full).order_by(models.RouteStationAssociation.columns.get('id'))  \
-        .offset((page_number-1)*10).limit(10).all()
+        .all()
     grouped_results = {}
-
-    print("aaaaaaaaaa",routes_filtered)
 
 
     for item in routes_filtered:
@@ -216,14 +220,18 @@ def get_routes_filtered(page_number:int,db: Session, startCity: str, startCountr
                                                       "price":item[9]
 
                                                       })
-
     final_list = []
 
-    for key, value in grouped_results.items():
-        final_list.append(value)
 
-    print(final_list)
+    values_list = list(grouped_results.values())
+    if return_count:
+        return ceil(len(values_list) / 10) 
 
+    for i in range(0,10):
+        if((page_number-1)*10 + i >= len(values_list)):
+            break
+        final_list.append(values_list[(page_number-1)*10 + i])
+        
     return final_list
 
 
