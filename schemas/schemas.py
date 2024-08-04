@@ -52,11 +52,12 @@ class UserBase(BaseModel):
     full_name: str
     phone_number: str
     disabled: bool = True
+    role_type: Optional[str] = Field(default="Passenger")
+
 
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
-    role_type: Optional[str] = Field(default="Passenger")
 
 
 class UserRegister(BaseModel):
@@ -310,6 +311,7 @@ class RouteResponse(BaseModel):  # za sve rute filtrirane
     stations: List[RouteStationFormatted]
     company_name: Optional[str]
     route_id: int
+    days:Optional[List[DayBase]] = []
 
     class Config:
         orm_mode: True
@@ -324,7 +326,6 @@ class RouteStation2(BaseModel):
 
 class RouteCreateRequest(BaseModel):
     stations: List[RouteStation2]
-    company_id: int
     days: List[DayBase]
 
     class Config:

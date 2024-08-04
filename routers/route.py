@@ -76,13 +76,11 @@ def get_single_route_by_id(id: int, db: Session = Depends(get_db)):
 
 @route_router.post("/routes", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
 def post_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
-    return create_route(info.days, info.stations, info.company_id, db)
-
+    return create_route(info.days, info.stations, current_user.company_id, db)
 
 @route_router.put("/routes/{id}", response_model=schemas.Route, status_code=status.HTTP_201_CREATED, tags=["route"])
 def update_route(current_user: Annotated[schemas.User, Depends(get_current_driver_user)],id, info: schemas.RouteCreateRequest, db: Session = Depends(get_db)):
-    return update(id, info.days, info.stations, info.company_id, db)
-
+    return update(id, info.days, info.stations,current_user.company_id, db)
 
 @route_router.put("/routes/activate/{id}", status_code=status.HTTP_202_ACCEPTED, tags=["route"])
 def activate_deactivate_route(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],id, should_be_activated: bool, db: Session = Depends(get_db)):
