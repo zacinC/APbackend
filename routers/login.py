@@ -87,13 +87,34 @@ def reset_password(request: Request,
     db.add(user)
     db.commit()
 
-    message = "Lozinka je uspješno resetovana!"
+    message = "Password reset successfull!"
     return templates.TemplateResponse("successful_password_reset.html", {"request": request, "message": message})
 
 
 @login_router.get("/recover-password/{token}", response_class=HTMLResponse, tags=['login'])
 async def password_recovery_form(request: Request, token: str):
     return templates.TemplateResponse("reset_password.html", {"request": request, "token": token})
+
+
+@login_router.get("/verify-account/{token}", response_class=HTMLResponse, tags=['login'])
+async def account_verification(request: Request, token: str, db: Session = Depends(get_db)):
+    username = verify_password_reset_token(token=token)
+    if not username:
+        raise HTTPException(status_code=400, detail="Invalid token")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this email does not exist in the system.",
+        )
+
+    user.disabled = False
+    db.add(user)
+    db.commit()
+
+    message = "Account successfully activated!"
+    return templates.TemplateResponse("successfull_verification.html", {"request": request, "message": message})
 
 
 @login_router.post("/recover-password", response_model=Message, tags=['login'])

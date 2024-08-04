@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
 
+from ..auth.utils import generate_account_registration_email, send_email
+
 from ..auth.deps import get_current_active_user, get_current_admin_user
 
 from ..database.dbconfig import get_db
@@ -44,6 +46,10 @@ def register_user(user_in: schemas.UserRegister, db: Session = Depends(get_db)):
         )
     user_create = schemas.UserRegister.model_validate(user_in)
     user = create_user(db=db, user_create=user_create)
+
+    email_data = generate_account_registration_email(user)
+    send_email(user, email_data["html_content"], email_data["subject"])
+
     return user
 
 
