@@ -6,6 +6,12 @@ from sqlalchemy.orm import Session
 from ..database import models
 import datetime
 
+def find_station(stations,to_find):
+    print(stations,to_find.id)
+    for station in stations:
+        if station["station"].id == to_find.id:
+            return True
+    return False
 
 def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool] = None):
 
@@ -59,12 +65,12 @@ def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool
                 "stations": [],
                 "route_id":item[0]
             }
-
-        grouped_results[route_id]["stations"].append({"station": item[9],
-                                                      "arrival_time": item[7],
-                                                      "departure_time": item[6],
-                                                      "price":item[8]
-                                                      })
+        if not find_station(grouped_results[route_id]["stations"],item[9]):
+            grouped_results[route_id]["stations"].append({"station": item[9],
+                                                        "arrival_time": item[7],
+                                                        "departure_time": item[6],
+                                                        "price":item[8]
+                                                        })
 
     final_list = []
 
@@ -131,13 +137,12 @@ def get_routes_filtered_by_company(return_count:bool,page_number:int,db: Session
                 "stations": [],
                 "route_id":item[0]
             }
-
-        grouped_results[route_id]["stations"].append({"station": item[9],
-                                                      "arrival_time": item[7],
-                                                      "departure_time": item[6],
-                                                      "price":item[8]
-
-                                                      })
+        if not find_station(grouped_results[route_id]["stations"],item[9]):
+            grouped_results[route_id]["stations"].append({"station": item[9],
+                                                        "arrival_time": item[7],
+                                                        "departure_time": item[6],
+                                                        "price":item[8]
+                                                        })
 
     final_list = []
 
@@ -224,13 +229,13 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
                 "stations": [],
                 "route_id":item[1]
             }
+        if not find_station(grouped_results[route_id]["stations"],item[10]):
+            grouped_results[route_id]["stations"].append({"station": item[10],
+                                                        "arrival_time": item[8],
+                                                        "departure_time": item[7],
+                                                        "price":item[9]
 
-        grouped_results[route_id]["stations"].append({"station": item[10],
-                                                      "arrival_time": item[8],
-                                                      "departure_time": item[7],
-                                                      "price":item[9]
-
-                                                      })
+                                                        })
     final_list = []
 
 
