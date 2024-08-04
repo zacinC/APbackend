@@ -48,6 +48,8 @@ def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool
 
     grouped_results = {}
 
+    print(routes_filtered)
+
     for item in routes_filtered:
         route_id = item[0]
 
@@ -254,14 +256,14 @@ def delete_routeID(db: Session, id: int, day_name: str,flag:Optional[bool] = Non
 
     parent_route = route_to_find.parent_route
     arrival_station_id = route_to_find.arrival_station_id
-
-   
-
-
     all_routes = []
 
     if flag:
-        all_routes = db.query(models.Route).filter(or_(models.Route.parent_route == parent_route,models.Route.id == parent_route)).all()
+        if parent_route:
+            all_routes = db.query(models.Route).filter(or_(models.Route.parent_route == parent_route,models.Route.id == parent_route)).all()
+        else:
+            all_routes = db.query(models.Route).filter(or_(models.Route.parent_route == id,models.Route.id == id)).all()
+
         for route in all_routes:
             db.delete(route)
         
