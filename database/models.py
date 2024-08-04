@@ -105,6 +105,7 @@ class Route(Base):
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
     price = Column(DECIMAL(5, 2))
     is_active = Column(Boolean)
+    parent_route = Column(Integer,nullable=True)
 
     days = relationship("Day", secondary=RouteDayAssociation,
                         back_populates='routes')
@@ -163,7 +164,8 @@ class RouteDay(Base):
                     "RouteDay.day_name == Ticket.day_name, "
                     "RouteDay.route_id == Ticket.route_id)",
         foreign_keys="[Ticket.company_id, Ticket.day_name, Ticket.route_id]",
-        back_populates="routeday"
+        back_populates="routeday",
+        cascade="all, delete-orphan"
     )
 
 

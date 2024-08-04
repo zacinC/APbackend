@@ -10,6 +10,7 @@ from ..schemas import schemas
 
 city_router = APIRouter()
 
+# napraviti post za gradove
 
 @city_router.get("/cities", response_model=List[schemas.CityCreate], tags=["city"])
 def get_all_cities(city_name:Optional[str] = None,db: Session = Depends(get_db)):

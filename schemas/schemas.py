@@ -311,6 +311,7 @@ class RouteResponse(BaseModel):  # za sve rute filtrirane
     stations: List[RouteStationFormatted]
     company_name: Optional[str]
     route_id: int
+    days:Optional[List[DayBase]] = []
 
     class Config:
         orm_mode: True
