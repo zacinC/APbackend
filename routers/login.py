@@ -87,7 +87,7 @@ def reset_password(request: Request,
     db.add(user)
     db.commit()
 
-    message = "Lozinka je uspješno resetovana!"
+    message = "Password reset successfull!"
     return templates.TemplateResponse("successful_password_reset.html", {"request": request, "message": message})
 
 
@@ -113,7 +113,7 @@ async def account_verification(request: Request, token: str, db: Session = Depen
     db.add(user)
     db.commit()
 
-    message = "Nalog je uspješno aktiviran!"
+    message = "Account successfully activated!"
     return templates.TemplateResponse("successfull_verification.html", {"request": request, "message": message})
 
 
