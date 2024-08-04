@@ -7,7 +7,6 @@ from ..database import models
 import datetime
 
 def find_station(stations,to_find):
-    print(stations,to_find.id)
     for station in stations:
         if station["station"].id == to_find.id:
             return True
@@ -26,7 +25,7 @@ def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool
                     models.RouteStationAssociation.columns.get(
                         "route_id") == models.RouteDay.route_id,
                     models.Station.id == models.RouteStationAssociation.columns.get(
-                        "station_id")
+                        "station_id"),
                     ).order_by(models.RouteStationAssociation.columns.get(
                         "id")).all()
     else:
