@@ -6,8 +6,8 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 import logging
 
-from ..schemas.schemas import UserBase
-from ..settings import DOMAIN, EMAIL_RESET_TOKEN_EXPIRE_MINUTES, SECRET_KEY, BREVO_API_KEY, ENV
+from schemas.schemas import UserBase
+from settings import DOMAIN, EMAIL_RESET_TOKEN_EXPIRE_MINUTES, SECRET_KEY, BREVO_API_KEY, ENV
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -107,7 +107,6 @@ def render_email_template(template_name: str, context: dict) -> str:
 #     </html>
 #     """
 #     return html_content
-
 
 
 def send_email(user: UserBase, html_content, subject):

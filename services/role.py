@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..database import models
+from database import models
 
 
 def get_roles(db: Session, skip: int = 0, limit: int = 100):

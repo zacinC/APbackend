@@ -2,12 +2,13 @@ from math import ceil
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
-from ..database import models
-from ..schemas import schemas
+from database import models
+from schemas import schemas
 
 
-def get_stations(page_number:int,db: Session):
+def get_stations(page_number: int, db: Session):
     return db.query(models.Station).offset((page_number-1)*10).limit(10).all()
+
 
 def get_stations_count(db: Session):
     return ceil(db.query(func.count(models.Station.id)).scalar() / 10)

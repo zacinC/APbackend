@@ -1,19 +1,19 @@
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from ..settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from ..database import models
-from ..database.dbconfig import get_db
-from ..schemas.schemas import UserBase, Token
+from settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from database import models
+from database.dbconfig import get_db
+from schemas.schemas import UserBase, Token
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
-from ..auth.security import authenticate_user, create_access_token
-from ..auth.deps import get_current_active_user, get_current_user
-from ..auth.utils import generate_password_reset_email, get_password_hash, send_email, verify_password_reset_token, generate_password_reset_token
+from auth.security import authenticate_user, create_access_token
+from auth.deps import get_current_active_user, get_current_user
+from auth.utils import generate_password_reset_email, get_password_hash, send_email, verify_password_reset_token, generate_password_reset_token
 from fastapi import Depends, APIRouter, Form, HTTPException, Request, status
 from datetime import timedelta
 from sqlalchemy.orm import Session
-from ..schemas.schemas import Message, NewPassword
-from ..services.user import get_user_by_email, get_user_by_username
+from schemas.schemas import Message, NewPassword
+from services.user import get_user_by_email, get_user_by_username
 
 
 login_router = APIRouter()
