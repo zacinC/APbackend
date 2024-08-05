@@ -67,7 +67,8 @@ def create_user(db: Session, user_create: schemas.UserRegister | schemas.UserCre
         full_name=user_create.full_name,
         phone_number=user_create.phone_number,
         hashed_password=get_password_hash(user_create.password),
-        role_type=user_create.role_type
+        role_type=user_create.role_type,
+        company_id = user_create.company_id
     )
     db.add(db_obj)
     db.commit()
