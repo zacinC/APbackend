@@ -421,7 +421,7 @@ def update(id: int, days: List[models.Day], stations: List, company_id: int, db:
 
 def activate_deactivate(id: int, should_be_activated: bool, db: Session):
     if not should_be_activated:
-        delete_routeID(db, id, None,True)
+        delete_routeID(db, id, None,False)
 
     else:
         route_to_update = db.query(models.Route).filter(
