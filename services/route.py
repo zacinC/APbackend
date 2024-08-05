@@ -69,6 +69,66 @@ def get_routes(return_count:bool,page_number,db: Session,is_active:Optional[bool
     
     return final_list
 
+def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Session, company_id: int,is_active:Optional[int] = None):
+    routes_filtered = None
+
+
+    if is_active is None:
+        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+            .filter(models.Company.id == models.RouteDay.company_id, models.Company.id == company_id,
+                    models.RouteStationAssociation.columns.get(
+                        "route_id") == models.RouteDay.route_id,
+                    models.Station.id == models.RouteStationAssociation.columns.get(
+                        "station_id")
+                    ).order_by(models.RouteStationAssociation.columns.get(
+                        "id")).all()
+    else:
+        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+        .join(models.Route,models.RouteDay.route_id == models.Route.id).filter(models.Company.id == models.RouteDay.company_id, models.Company.id == company_id,
+                models.RouteStationAssociation.columns.get(
+                    "route_id") == models.RouteDay.route_id,
+                models.Station.id == models.RouteStationAssociation.columns.get(
+                    "station_id"),models.Route.is_active == is_active
+                ).order_by(models.RouteStationAssociation.columns.get(
+                    "id")).all()
+            
+    grouped_results = {}
+
+    print(routes_filtered)
+    
+    for item in routes_filtered:
+        route_id = item[0]
+
+
+        if route_id not in grouped_results:
+            grouped_results[route_id] = {
+                "company_name": item[1],
+                "stations": [],
+                "route_id":item[0]
+            }
+        if not find_station(grouped_results[route_id]["stations"],item[9]):
+            grouped_results[route_id]["stations"].append({"station": item[9],
+                                                        "arrival_time": item[7],
+                                                        "departure_time": item[6],
+                                                        "price":item[8]
+                                                        })
+
+    final_list = []
+
+    values_list = list(grouped_results.values())
+
+    if return_count:
+        return ceil(len(values_list) / 10) 
+
+    for i in range(0,10):
+        if((page_number-1)*10 + i >= len(values_list)):
+            break
+        final_list.append(values_list[(page_number-1)*10 + i])
+    
+    return final_list
+
+
+
 
 def get_routes_filtered_by_company(return_count:bool,page_number:int,db: Session, companyname: str,is_active:Optional[int] = None):
 
@@ -164,7 +224,7 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
     startStations = [station.id for station in startStations]
     endStations = [station.id for station in endStations]
 
-    print(startStations, endStations, day_of_week_full,price_from,price_to)
+    print(price_from,price_to)
 
 
     routes: List[models.Route] = db.query(models.Route).filter(models.Route.departure_station_id.in_(
@@ -172,8 +232,7 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
                                models.Route.price >= price_from,models.Route.price <= price_to).all()
 
     routesIds = [route.id for route in routes]
-
-
+    
     routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station).\
         filter(models.RouteDayAssociation.columns.get("route_id").in_(routesIds), models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
                models.RouteDayAssociation.columns.get(
