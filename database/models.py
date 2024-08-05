@@ -31,7 +31,7 @@ class News(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(100))
     content = Column(String(5000))
-    is_active = Column(Boolean, default=True)
+    is_active = Column(Boolean,default=True)
     created_date = Column(DateTime)
     image = Column(String(200))
     slug = Column(String(200))
@@ -104,7 +104,7 @@ class Route(Base):
     departure_station_id = Column(Integer, ForeignKey("station.id"))
     arrival_station_id = Column(Integer, ForeignKey("station.id"))
     price = Column(DECIMAL(5, 2))
-    is_active = Column(Boolean)
+    is_active = Column(Integer)
     parent_route = Column(Integer,nullable=True)
 
     days = relationship("Day", secondary=RouteDayAssociation,
