@@ -192,7 +192,7 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
     return final_list
 
 
-def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None):
+def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity: str, startCountry: str, endCity: str, endCountry: str, date: Optional[datetime.datetime],price_from:Optional[float] = None,price_to:Optional[float] = None,companyname = Optional[str]):
     day_of_week_full = None
     if date:
         day_of_week_full = date.strftime('%A')

@@ -56,11 +56,12 @@ def get_filtered_routes(
         date: Optional[datetime] = None,
         price_from:Optional[float] = None,
         price_to:Optional[float] = None,
+        companyname:Optional[str] = None,
         db: Session = Depends(get_db)):
         
 
     all_routes_filtered = get_routes_filtered(False,page_number,
-        db, startCity, startCountry, endCity, endCountry, date,price_from,price_to)
+        db, startCity, startCountry, endCity, endCountry, date,price_from,price_to,companyname)
     return all_routes_filtered
 
 
