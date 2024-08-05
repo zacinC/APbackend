@@ -434,12 +434,12 @@ def get_route_by_id(id:int,db:Session):
                 "route_id":item[0],
                 "days":[]  
             }
-
-        grouped_results[route_id]["stations"].append({"station": item[9],
-                                                      "arrival_time": item[7],
-                                                      "departure_time": item[6],
-                                                      "price":item[8]
-                                                      })
+        if not find_station(grouped_results[route_id]["stations"],item[9]):
+            grouped_results[route_id]["stations"].append({"station": item[9],
+                                                        "arrival_time": item[7],
+                                                        "departure_time": item[6],
+                                                        "price":item[8]
+                                                        })
         if item[2] not in seen_days:
             grouped_results[route_id]["days"].append({"day_name":item[2]})
             seen_days.append(item[2])
