@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
 
-from ..auth.deps import get_current_admin_user
+from auth.deps import get_current_admin_user
 
-from ..database.dbconfig import get_db
-from ..services.news import get_news, upload_news, delete, update, get_news_filtered, get_news_count, get_news_filtered_count
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.news import get_news, upload_news, delete, update, get_news_filtered, get_news_count, get_news_filtered_count
+from schemas import schemas
 
 news_router = APIRouter()
 

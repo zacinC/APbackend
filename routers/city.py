@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import APIRouter, status
 
-from ..auth.deps import get_current_admin_user
+from auth.deps import get_current_admin_user
 
-from ..database.dbconfig import get_db
-from ..services.city import get_cities, insert_city
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.city import get_cities, insert_city
+from schemas import schemas
 
 city_router = APIRouter()
 

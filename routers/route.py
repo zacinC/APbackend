@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import APIRouter, status
 
-from ..auth.deps import get_current_admin_user, get_current_driver_user
+from auth.deps import get_current_admin_user, get_current_driver_user
 
-from ..database.dbconfig import get_db
-from ..services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate, get_route_by_id
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate, get_route_by_id
+from schemas import schemas
 from datetime import datetime
 
 route_router = APIRouter()

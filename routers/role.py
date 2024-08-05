@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import APIRouter
 
-from ..database.dbconfig import get_db
-from ..services.role import get_roles
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.role import get_roles
+from schemas import schemas
 
 role_router = APIRouter()
 

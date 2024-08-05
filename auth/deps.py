@@ -4,10 +4,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import decode
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
-from ..services.user import get_user_by_email, get_user_by_username
-from ..schemas.schemas import TokenData, User, UserBase
-from ..database.dbconfig import SessionLocal, get_db
-from ..settings import ALGORITHM, SECRET_KEY
+from services.user import get_user_by_email, get_user_by_username
+from schemas.schemas import TokenData, User, UserBase
+from database.dbconfig import SessionLocal, get_db
+from settings import ALGORITHM, SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

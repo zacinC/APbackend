@@ -3,15 +3,15 @@ from math import ceil
 from pathlib import Path
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from ..database import models
+from database import models
 import cloudinary.uploader
 import cloudinary
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from slugify import slugify
 import datetime
-from ..schemas import schemas
-from ..settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from schemas import schemas
+from settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 from sqlalchemy import or_
 from sqlalchemy import func
 from sqlalchemy import desc
@@ -29,33 +29,35 @@ def extract_public_id(image_url: str) -> str:
     return image_url.split('/')[-1].split('.')[0]
 
 
-def get_news(db: Session,page_number):
+def get_news(db: Session, page_number):
     return db.query(models.News).order_by(desc(models.News.id)).offset((page_number-1)*10).limit(10).all()
+
 
 def get_news_count(db: Session):
     return ceil(db.query(func.count(models.News.id)).scalar() / 10)
 
 
-def get_news_filtered(db: Session,search:str,page_number:int):
+def get_news_filtered(db: Session, search: str, page_number: int):
 
-        return db.query(models.News).filter(
-            or_(
-                models.News.content.like(f'%{search}%'),
-                models.News.title.like(f'%{search}%')
-            )
-        ).order_by(desc(models.News.id)).offset((page_number-1)*10).limit(10).all()
+    return db.query(models.News).filter(
+        or_(
+            models.News.content.like(f'%{search}%'),
+            models.News.title.like(f'%{search}%')
+        )
+    ).order_by(desc(models.News.id)).offset((page_number-1)*10).limit(10).all()
 
 
-def get_news_filtered_count(db: Session,search:str):
+def get_news_filtered_count(db: Session, search: str):
 
-        news = db.query(models.News).filter(
-            or_(
-                models.News.content.like(f'%{search}%'),
-                models.News.title.like(f'%{search}%')
-            )
-        ).all()
+    news = db.query(models.News).filter(
+        or_(
+            models.News.content.like(f'%{search}%'),
+            models.News.title.like(f'%{search}%')
+        )
+    ).all()
 
-        return ceil(len(news) / 10)
+    return ceil(len(news) / 10)
+
 
 def upload_news(db: Session, notif: schemas.NewsCreate):
 
@@ -95,7 +97,6 @@ def delete(db: Session, id: int):
 
     if not to_delete:
         raise HTTPException(status_code=404, detail="Not found!")
-    
 
     if to_delete.image:
         image_url = to_delete.image
@@ -120,7 +121,7 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
         print(public_id)
 
         cloudinary.uploader.destroy(public_id)
-    
+
     upload_result_url = None
 
     if notif.image:

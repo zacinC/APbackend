@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from fastapi import APIRouter, status
 
-from ..auth.deps import get_current_active_user, get_current_user
+from auth.deps import get_current_active_user, get_current_user
 
-from ..database.dbconfig import get_db
-from ..services.ticket import get_tickets_one_user, create_ticket, delete_ticket_user, get_tickets_one_user_count
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.ticket import get_tickets_one_user, create_ticket, delete_ticket_user, get_tickets_one_user_count
+from schemas import schemas
 
 ticket_router = APIRouter()
 

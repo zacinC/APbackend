@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi import APIRouter
 
-from ..auth.utils import generate_account_registration_email, send_email
+from auth.utils import generate_account_registration_email, send_email
 
-from ..auth.deps import get_current_active_user, get_current_admin_user
+from auth.deps import get_current_active_user, get_current_admin_user
 
-from ..database.dbconfig import get_db
-from ..services.user import create_user, get_users, get_user_by_email, get_users_filtered, get_user_by_username, delete_user_by_id, update_single_user, get_count_users, get_count_users_filtered
-from ..schemas import schemas
+from database.dbconfig import get_db
+from services.user import create_user, get_users, get_user_by_email, get_users_filtered, get_user_by_username, delete_user_by_id, update_single_user, get_count_users, get_count_users_filtered
+from schemas import schemas
 
 user_router = APIRouter()
 
