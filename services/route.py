@@ -377,6 +377,14 @@ def activate_deactivate(id: int, should_be_activated: bool, db: Session):
         db.commit()
         db.refresh(route_to_update)
 
+def get_all_inactive(db:Session):
+    routes = db.query(models.Route.id).filter(models.Route.is_active == 0).all()
+    return [route[0] for route in routes]
+
+def get_all_active(db:Session):
+    routes = db.query(models.Route.id).filter(models.Route.is_active == 1).all()
+    return [route[0] for route in routes]
+
 def get_route_by_id(id:int,db:Session):
     routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
             .filter(models.Company.id == models.RouteDay.company_id,
