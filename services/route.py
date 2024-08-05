@@ -3,6 +3,8 @@ from typing import List, Optional
 from fastapi import HTTPException
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+
+from ..schemas import schemas
 from ..database import models
 import datetime
 
@@ -313,13 +315,6 @@ def delete_routeID(db: Session, id: int, day_name: str,flag:Optional[bool] = Non
         for route in all_routes:
             route.is_active = -1
 
-
-    else:
-        all_routes_ids = [route.id for route in all_routes]
-        to_delete = db.query(models.RouteDay).filter(models.RouteDayAssociation.columns.get("route_id").in_(all_routes_ids),models.RouteDayAssociation.get("day_name") == day_name)
-        for route in to_delete:
-            db.delete(to_delete)
-
     db.commit()
 
 
@@ -415,8 +410,36 @@ def create_route(days: List[models.Day], stations: List, company_id: int, db: Se
 
 
 def update(id: int, days: List[models.Day], stations: List, company_id: int, db: Session):
+    temp_route = db.query(models.Route).filter(models.Route.id == id).first()
+    temp_stations = []
+    cnt = 0
     delete_routeID(db,id,None,True)
-    return create_route(days, stations, company_id, db)
+
+
+    if not temp_route.parent_route:
+        return create_route(days, stations, company_id, db)
+    else:
+        route = get_route_by_id(temp_route.parent_route,db)[0]
+       
+        for station in route["stations"]:
+            if cnt < len(stations) and station["station"].id == stations[cnt].station_id:
+                temp_stations.append(stations[cnt])
+                cnt+=1
+            else:
+                obj = schemas.RouteStation2(station_id = station["station"].id,departure_time = station["departure_time"],arrival_time = station["arrival_time"],price=float(station["price"])
+                )
+                
+                temp_stations.append(obj)
+        
+        for i in range(cnt,len(stations)):
+            temp_stations.append(stations[i])
+        
+        print("JEDAN",temp_stations)
+        print("DVA",stations)
+        
+        return create_route(days,temp_stations,company_id,db)
+                
+
 
 
 def activate_deactivate(id: int, should_be_activated: bool, db: Session):
@@ -477,8 +500,6 @@ def get_route_by_id(id:int,db:Session):
         if item[2] not in seen_days:
             grouped_results[route_id]["days"].append({"day_name":item[2]})
             seen_days.append(item[2])
-
-       
 
     final_list = []
 
