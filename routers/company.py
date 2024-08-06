@@ -14,7 +14,7 @@ from datetime import datetime
 company_router = APIRouter()
 
 
-@company_router.get("/companies", response_model=List[schemas.Company], tags=["company"])
+@company_router.get("/companies", response_model=List[schemas.CompanyBase], tags=["company"])
 def get_companies(search: Optional[str] = None, db: Session = Depends(get_db)):
     return get_all_companies(search, db)
 

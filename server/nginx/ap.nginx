@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name 207.154.253.148;
+    server_name autobuskiprevozcg.xyz 207.154.253.148;
     server_tokens off;
     charset utf-8;
 
