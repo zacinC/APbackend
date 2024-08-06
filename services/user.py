@@ -1,6 +1,7 @@
 from math import ceil
 from typing import Optional
 from fastapi import HTTPException
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from auth.utils import get_password_hash
@@ -10,19 +11,41 @@ from auth import utils
 
 
 def get_users(db: Session, page_number):
-    return db.query(models.User).offset((page_number-1)*10).limit(10).all()
-
+    all_users = db.query(models.User,models.Company.company_name).outerjoin(models.Company)\
+                                        .offset((page_number-1)*10).limit(10).all()
+    list_to_return = []
+    for user in all_users:
+        temp_user = user[0]
+        temp_user.company_name = user[1]
+        list_to_return.append(temp_user)
+    
+    return list_to_return
 
 def get_count_users(db: Session):
     return ceil(len(db.query(models.User).all()) / 10)
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+    user = None
+    user = db.query(models.User).filter(models.User.email == email).first()
 
+    if user.company_id:
+        user_with_company_name = db.query(models.User,models.Company).filter(models.Company.id == user.company_id). \
+        filter(models.User.email == email).first()
+        user.company_name = user_with_company_name[1]
+
+    return user
 
 def get_user_by_username(db: Session, username: str):
-    return db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(models.User).filter(models.User.username == username).first()
+
+    if user and user.company_id:
+        user_with_company_name = db.query(models.User, models.Company.company_name). \
+            join(models.Company, models.Company.id == user.company_id). \
+            filter(models.User.username == username).first()
+        user.company_name = user_with_company_name[1]
+
+    return user
 
 
 def get_count_users_filtered(db: Session, username: Optional[str] = None, full_name: Optional[str] = None, email: Optional[str] = None, role: Optional[str] = None):
@@ -53,13 +76,22 @@ def get_users_filtered(page_number: int, db: Session, username: Optional[str] = 
     if not role:
         role = ""
 
-    return db.query(models.User).filter(models.User.email.like(f'%{email}%'),
+    list_to_return = []
+
+    all_users = db.query(models.User,models.Company.company_name).outerjoin(models.Company).filter(models.User.email.like(f'%{email}%'),
                                         models.User.username.like(
                                             f'%{username}%'),
                                         models.User.full_name.like(
                                             f'%{full_name}%'),
                                         models.User.role_type.like(f'%{role}')).offset((page_number-1)*10).limit(10).all()
+    
+    for user in all_users:
+        print(user) 
+        temp_user = user[0]
+        temp_user.company_name = user[1]
+        list_to_return.append(temp_user)
 
+    return list_to_return    
 
 def create_user(db: Session, user_create: schemas.UserRegister | schemas.UserCreate) -> models.User:
     db_obj = models.User(
