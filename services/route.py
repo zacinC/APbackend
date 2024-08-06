@@ -425,8 +425,12 @@ def activate_deactivate(id: int, should_be_activated: bool, db: Session):
             raise HTTPException(
             status_code=404, detail=f'Route with ID: {id} not found!')
         
+        all_routes = db.query(models.Route).filter(models.Route.parent_route == id)
 
         route_to_update.is_active = 1
+        for route in all_routes:
+            route.is_active = 1
+        
         db.commit()
         db.refresh(route_to_update)
 
