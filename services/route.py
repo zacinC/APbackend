@@ -210,6 +210,8 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
         endCity = ""
     if not endCountry:
         endCountry = ""
+    if not companyname:
+        companyname = ""
     
 
     startStations: List[models.Station] = db.query(models.Station).filter(
@@ -225,12 +227,12 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
     startStations = [station.id for station in startStations]
     endStations = [station.id for station in endStations]
 
-    print(startStations, endStations, day_of_week_full,price_from,price_to)
     routes: List[models.Route] = db.query(models.Route).filter(models.Route.departure_station_id.in_(
         startStations)).filter(models.Route.arrival_station_id.in_(endStations),
                                models.Route.price >= price_from, models.Route.price <= price_to).all()
 
     routesIds = [route.id for route in routes]
+    print(routesIds)
     routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station).\
         filter(models.RouteDayAssociation.columns.get("route_id").in_(routesIds), models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
                models.RouteDayAssociation.columns.get(
