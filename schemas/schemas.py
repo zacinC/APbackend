@@ -113,6 +113,8 @@ class CompanyBase(BaseModel):
 class CompanyCreate(CompanyBase):
     pass
 
+class CompanyShow(CompanyBase):
+    id:int
 
 class Company(CompanyBase):
     id: int
