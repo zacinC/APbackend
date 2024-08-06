@@ -34,7 +34,8 @@ def get_routes(return_count: bool, page_number, db: Session, is_active: Optional
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
                 models.Station.id == models.RouteStationAssociation.columns.get(
-                    "station_id"),models.Route.is_active == is_active
+                    "station_id"),models.Route.is_active == is_active,models.Route.parent_route == None,
+
                 ).order_by(models.RouteStationAssociation.columns.get(
                     "id")).all()
 
