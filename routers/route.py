@@ -72,7 +72,7 @@ def get_filtered_routes(
 
 
 @route_router.delete("/routes/{id}", status_code=status.HTTP_204_NO_CONTENT, tags=["route"])
-def delete_route(current_user: Annotated[schemas.User, Depends(get_current_admin_user)], id: int, day_name: Optional[str] = None, db: Session = Depends(get_db)):
+def delete_route(current_user: Annotated[schemas.User, Depends(get_current_admin_user)],id: int, day_name: Optional[str] = None, db: Session = Depends(get_db)):
 
     return delete_routeID(db, id, day_name)
 

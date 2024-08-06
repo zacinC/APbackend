@@ -28,7 +28,7 @@ def get_all_stations_filtered(search: str, db: Session = Depends(get_db)):
     return get_stations_filtered(db, search)
 
 
-@station_router.post("/stations", response_model=schemas.StationCreate, tags=["station"])
+@station_router.post("/stations", response_model=schemas.Station, tags=["station"])
 def post_station(current_user: Annotated[schemas.User, Depends(get_current_admin_user)], station: schemas.StationCreate, db: Session = Depends(get_db)):
     return add_station(station, db)
 
