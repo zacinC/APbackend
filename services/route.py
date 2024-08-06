@@ -454,7 +454,7 @@ def get_all_active(db: Session):
 
 
 def get_route_by_id(id: int, db: Session):
-    routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station)\
+    routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station,models.Company.id)\
         .filter(models.Company.id == models.RouteDay.company_id,
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
@@ -475,7 +475,8 @@ def get_route_by_id(id: int, db: Session):
                 "company_name": item[1],
                 "stations": [],
                 "route_id": item[0],
-                "days": []
+                "days": [],
+                "company_id":item[10]
             }
         if not find_station(grouped_results[route_id]["stations"], item[9]):
             grouped_results[route_id]["stations"].append({"station": item[9],
