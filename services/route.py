@@ -150,7 +150,7 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
                     ).order_by(models.RouteStationAssociation.columns.get(
                         "id")).all()
     else:
-        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station,models.Station,models.Company.id)\
+        routes_filtered = db.query(models.RouteDay.route_id, models.Company.company_name, models.RouteDay.day_name, models.RouteStationAssociation, models.Station,models.Company.id)\
         .join(models.Route,models.RouteDay.route_id == models.Route.id).filter(models.Company.id == models.RouteDay.company_id, models.Company.company_name == companyname,
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
@@ -162,6 +162,7 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
         
             
     grouped_results = {}
+    print(routes_filtered)
 
     for item in routes_filtered:
         route_id = item[0]
