@@ -6,13 +6,11 @@ from sqlalchemy.orm import Session
 from database import models
 import datetime
 
-
 def find_station(stations, to_find):
     for station in stations:
         if station["station"].id == to_find.id:
             return True
     return False
-
 
 def get_routes(return_count: bool, page_number, db: Session, is_active: Optional[bool] = None):
 
@@ -133,8 +131,6 @@ def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Sess
     return final_list
 
 
-
-
 def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Session, companyname: str, is_active: Optional[int] = None):
 
     routes_filtered = None
@@ -155,7 +151,8 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
                 models.RouteStationAssociation.columns.get(
                     "route_id") == models.RouteDay.route_id,
                 models.Station.id == models.RouteStationAssociation.columns.get(
-                    "station_id"),models.Route.is_active == is_active
+                    "station_id"),models.Route.is_active == is_active,
+                    models.Route.parent_route == None,
                 ).order_by(models.RouteStationAssociation.columns.get(
                     "id")).all()
         
@@ -229,15 +226,11 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
     endStations = [station.id for station in endStations]
 
     print(startStations, endStations, day_of_week_full,price_from,price_to)
-
-
     routes: List[models.Route] = db.query(models.Route).filter(models.Route.departure_station_id.in_(
         startStations)).filter(models.Route.arrival_station_id.in_(endStations),
                                models.Route.price >= price_from, models.Route.price <= price_to).all()
 
     routesIds = [route.id for route in routes]
-
-
     routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station).\
         filter(models.RouteDayAssociation.columns.get("route_id").in_(routesIds), models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
                models.RouteDayAssociation.columns.get(
@@ -282,7 +275,6 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
         final_list.append(values_list[(page_number-1)*10 + i])
 
     return final_list
-
 
 # brisanje u smislu setanje  is_active na -1
 def delete_routeID(db: Session, id: int, day_name: str, flag: Optional[bool] = None):
@@ -413,7 +405,6 @@ def create_route(days: List[models.Day], stations: List, company_id: int, db: Se
             db.commit()
 
     return new_route
-
 
 def update(id: int, days: List[models.Day], stations: List, company_id: int, db: Session):
     delete_routeID(db,id,None,True)
