@@ -115,7 +115,13 @@ def delete_user_by_id(id: int, db: Session):
     if not user_to_delete:
         raise HTTPException(
             status_code=404, detail=f'User with {id} not found!')
+    
+    all_tickets_user = db.query(models.Ticket).filter(models.Ticket.passenger_id == id)
 
+    for ticket in all_tickets_user:
+        db.delete(ticket)
+    
+    db.commit()
     db.delete(user_to_delete)
 
     db.commit()

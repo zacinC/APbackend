@@ -1,4 +1,4 @@
-from sqlalchemy import DECIMAL, Boolean, Column, ForeignKey, Integer, String, DateTime, Double, Table, Time
+from sqlalchemy import DECIMAL, Boolean, Column, ForeignKey, ForeignKeyConstraint, Integer, String, DateTime, Double, Table, Time
 from sqlalchemy.orm import relationship
 
 from .dbconfig import Base
@@ -92,6 +92,14 @@ class Ticket(Base):
         foreign_keys="[Ticket.company_id, Ticket.day_name, Ticket.route_id]",
         back_populates="tickets"
     )
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['company_id', 'day_name', 'route_id'],
+            ['routeday.company_id', 'routeday.day_name', 'routeday.route_id']
+        ),
+    )
+
     user = relationship("User", back_populates="tickets")
 
 
