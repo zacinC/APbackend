@@ -7,41 +7,47 @@ from fastapi import APIRouter, status
 from auth.deps import get_current_admin_user, get_current_driver_user
 
 from database.dbconfig import get_db
-from services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate, get_route_by_id
+from services.route import get_routes, get_routes_filtered, delete_routeID, create_route, get_routes_filtered_by_company, update, activate_deactivate, get_route_by_id,get_routes_filtered_by_company_id
 from schemas import schemas
 from datetime import datetime
 
 route_router = APIRouter()
 
 @route_router.get("/routes_paginated/count",response_model=int, tags=["route"])
-def get_all_routes(companyname: Optional[str] = None, db: Session = Depends(get_db),is_active:Optional[int] = None):
+def get_all_routes(companyname: Optional[str] = None, company_id:Optional[int] = None,db: Session = Depends(get_db),is_active:Optional[int] = None):
     if companyname:
         return get_routes_filtered_by_company(True,-1,db, companyname,is_active)
+    if company_id:
+        return get_routes_filtered_by_company_id(True,-1,db,company_id,is_active)
     
     return get_routes(True,-1,db,is_active)
 
 
-@route_router.get("/routes_filtered/count", response_model=int, tags=["route"])
+@route_router.get("/routes_filtered/count",response_model = int,tags=["route"])
 def get_filtered_routes(
         startCity: Optional[str] = None,
         startCountry: Optional[str] = None,
-        endCity: Optional[str] = None,
+        endCity: Optional[str] = None,  
         endCountry: Optional[str] = None,
         date: Optional[datetime] = None,
-        price_from: Optional[float] = None,
-        price_to: Optional[float] = None,
+        price_from:Optional[float] = None,
+        price_to:Optional[float] = None,
         db: Session = Depends(get_db)):
+        
 
-    all_routes_filtered = get_routes_filtered(True, -1,
-                                              db, startCity, startCountry, endCity, endCountry, date, price_from, price_to)
+    all_routes_filtered = get_routes_filtered(True,-1,
+        db, startCity, startCountry, endCity, endCountry, date,price_from,price_to)
     return all_routes_filtered
 
 
 
 @route_router.get("/routes_paginated/{page_number}", response_model=List[schemas.RouteResponse], tags=["route"])
-def get_all_routes(page_number:int,companyname: Optional[str] = None, db: Session = Depends(get_db),is_active:Optional[int] = None):
+def get_all_routes(page_number:int,companyname: Optional[str] = None, company_id:Optional[int] = None,db: Session = Depends(get_db),is_active:Optional[int] = None):
     if companyname:
         return get_routes_filtered_by_company(False,page_number,db, companyname,is_active)
+    
+    if company_id:
+        return get_routes_filtered_by_company_id(False,page_number,db,company_id,is_active)
     
     return get_routes(False,page_number,db,is_active)
 
