@@ -87,6 +87,7 @@ class User(UserBase):
     hashed_password: str
     role_type: Optional[str] = Field(default="Passenger")
     company_id: Optional[int] = None
+    company_name:Optional[str] = None
     tickets: List['Ticket'] = []
 
     class Config:
@@ -99,6 +100,7 @@ class UserPublic(UserBase):
     id: int
     role_type: Optional[str] = Field(default="Passenger")
     company_id: Optional[int] = None
+    company_name:Optional[str] = None
     tickets: List['Ticket'] = []
 
 # Company Schema
