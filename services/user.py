@@ -26,10 +26,9 @@ def get_count_users(db: Session):
 
 
 def get_user_by_email(db: Session, email: str):
-    user = None
     user = db.query(models.User).filter(models.User.email == email).first()
 
-    if user.company_id:
+    if user and user.company_id:
         user_with_company_name = db.query(models.User,models.Company).filter(models.Company.id == user.company_id). \
         filter(models.User.email == email).first()
         user.company_name = user_with_company_name[1]
