@@ -17,11 +17,13 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://apcg-nine.vercel.app/",
+    "http://localhost:5173",
+    "https://apcg-nine.vercel.app",
     "https://apcg-ex5hk1hrz-vedads-projects.vercel.app",
-    "apcg.vercel.app",
-    "apcg-jovan02s-projects.vercel.app",
-    "apcg-23ummtbyj-jovan02s-projects.vercel.app"
+    "https://apcg.vercel.app",
+    "https://apcg-jovan02s-projects.vercel.app",
+    "https://apcg-23ummtbyj-jovan02s-projects.vercel.app",
+    "https://autobuskiprevozcg.xyz"
 
 ]
 
