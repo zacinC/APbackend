@@ -38,15 +38,18 @@ def get_routes(return_count: bool, page_number, db: Session, is_active: Optional
                     "id")).all()
 
     grouped_results = {}
+    seen_days = {}
 
 
     for item in routes_filtered:
         route_id = item[0]
 
         if route_id not in grouped_results:
+            seen_days[route_id] = []
             grouped_results[route_id] = {
                 "company_name": item[1],
                 "stations": [],
+                "days": [],
                 "route_id": item[0],
                 "company_id":item[10]
 
@@ -57,6 +60,9 @@ def get_routes(return_count: bool, page_number, db: Session, is_active: Optional
                                                           "departure_time": item[6],
                                                           "price": item[8]
                                                           })
+        if item[2] not in seen_days[route_id]:
+            grouped_results[route_id]["days"].append({"day_name": item[2]})
+            seen_days[route_id].append(item[2])
 
     final_list = []
 
@@ -97,6 +103,7 @@ def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Sess
                     "id")).all()
             
     grouped_results = {}
+    seen_days = {}
 
     
     for item in routes_filtered:
@@ -104,10 +111,12 @@ def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Sess
 
 
         if route_id not in grouped_results:
+            seen_days[route_id] = []
             grouped_results[route_id] = {
                 "company_name": item[1],
                 "stations": [],
                 "route_id":item[0],
+                "days": [],
                 "company_id":item[10]
 
             }
@@ -117,6 +126,9 @@ def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Sess
                                                         "departure_time": item[6],
                                                         "price":item[8]
                                                         })
+        if item[2] not in seen_days[route_id]:
+            grouped_results[route_id]["days"].append({"day_name": item[2]})
+            seen_days[route_id].append(item[2])
 
     final_list = []
 
@@ -160,15 +172,18 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
         
             
     grouped_results = {}
+    seen_days = {}
 
     for item in routes_filtered:
         route_id = item[0]
 
         if route_id not in grouped_results:
+            seen_days[route_id] = []
             grouped_results[route_id] = {
                 "company_name": item[1],
                 "stations": [],
                 "route_id": item[0],
+                "days": [],
                 "company_id":item[10]
             }
         if not find_station(grouped_results[route_id]["stations"], item[9]):
@@ -177,6 +192,9 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
                                                           "departure_time": item[6],
                                                           "price": item[8]
                                                           })
+        if item[2] not in seen_days[route_id]:
+            grouped_results[route_id]["days"].append({"day_name": item[2]})
+            seen_days[route_id].append(item[2])
 
     final_list = []
 
@@ -245,7 +263,6 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
                models.RouteDayAssociation.columns.get('day_name') == day_of_week_full).order_by(models.RouteStationAssociation.columns.get('id'))  \
         .all()
     grouped_results = {}
-
 
     for item in routes_filtered:
         route_id = item[1]
