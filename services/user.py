@@ -85,7 +85,6 @@ def get_users_filtered(page_number: int, db: Session, username: Optional[str] = 
                                         models.User.role_type.like(f'%{role}')).offset((page_number-1)*10).limit(10).all()
     
     for user in all_users:
-        print(user) 
         temp_user = user[0]
         temp_user.company_name = user[1]
         list_to_return.append(temp_user)

@@ -39,7 +39,6 @@ def get_routes(return_count: bool, page_number, db: Session, is_active: Optional
 
     grouped_results = {}
 
-    print(routes_filtered)
 
     for item in routes_filtered:
         route_id = item[0]
@@ -99,7 +98,6 @@ def get_routes_filtered_by_company_id(return_count:bool,page_number:int,db: Sess
             
     grouped_results = {}
 
-    print(routes_filtered)
     
     for item in routes_filtered:
         route_id = item[0]
@@ -162,7 +160,6 @@ def get_routes_filtered_by_company(return_count: bool, page_number: int, db: Ses
         
             
     grouped_results = {}
-    print(routes_filtered)
 
     for item in routes_filtered:
         route_id = item[0]
@@ -233,28 +230,22 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
     startStations = [station.id for station in startStations]
     endStations = [station.id for station in endStations]
 
-    routes: List[models.Route] = db.query(models.Route).filter(models.Route.departure_station_id.in_(
-        startStations)).filter(models.Route.arrival_station_id.in_(endStations),
-                               models.Route.price >= price_from, models.Route.price <= price_to).all()
+    routesIds = db.query(models.Route.id).filter(models.Route.arrival_station_id.in_(endStations)).filter(models.Route.departure_station_id.in_(startStations))
 
-    routesIds = [route.id for route in routes]
-    print(routesIds)
-    routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station,models.Company.id).\
-        filter(models.RouteDayAssociation.columns.get("route_id").in_(routesIds), models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
+    routes_filtered: List = db.query(models.RouteDayAssociation, models.Company.company_name, models.RouteStationAssociation, models.Station,models.Company.id,models.Route.departure_time).\
+        join(models.Route,models.RouteDay.route_id == models.Route.id).filter(models.Company.id == models.RouteDayAssociation.columns.get("company_id"),
+               models.Route.id.in_(routesIds),                                                        
                models.RouteDayAssociation.columns.get(
                'route_id') == models.RouteStationAssociation.columns.get('route_id'),
                models.RouteStationAssociation.columns.get(
                'station_id') == models.Station.id,
-               models.RouteStationAssociation.columns.get(
-               'route_id').in_(get_all_active(db)),
-               models.RouteStationAssociation.columns.get(
-               'route_id').in_(routesIds),
+               models.Route.is_active == 1,
+               models.Route.price >= price_from,models.Route.price <= price_to,
                models.Company.company_name.like(f'%{companyname}%'),
                models.RouteDayAssociation.columns.get('day_name') == day_of_week_full).order_by(models.RouteStationAssociation.columns.get('id'))  \
         .all()
     grouped_results = {}
 
-    print(routes_filtered)
 
     for item in routes_filtered:
         route_id = item[1]
@@ -263,7 +254,8 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
                 "company_name": item[3],
                 "stations": [],
                 "route_id": item[1],
-                "company_id":item[11]
+                "company_id":item[11],
+                "departure_time":item[12]
             }
         if not find_station(grouped_results[route_id]["stations"], item[10]):
             grouped_results[route_id]["stations"].append({"station": item[10],
@@ -274,7 +266,7 @@ def get_routes_filtered(return_count:bool,page_number:int,db: Session, startCity
                                                           })
     final_list = []
 
-    values_list = list(grouped_results.values())
+    values_list = sorted(grouped_results.values(), key=lambda x: x['departure_time'])
     if return_count:
         return ceil(len(values_list) / 10)
 
@@ -494,6 +486,5 @@ def get_route_by_id(id: int, db: Session):
     for key, value in grouped_results.items():
         final_list.append(value)
 
-    print(final_list)
 
     return final_list

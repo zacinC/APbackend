@@ -61,7 +61,6 @@ def get_news_filtered_count(db: Session, search: str):
 
 def upload_news(db: Session, notif: schemas.NewsCreate):
 
-    print(notif.image)
 
     upload_result_url = None
 
@@ -118,7 +117,6 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     if (image_url):
         public_id = extract_public_id(image_url)
 
-        print(public_id)
 
         cloudinary.uploader.destroy(public_id)
 
