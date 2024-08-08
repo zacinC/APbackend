@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from math import ceil
 from fastapi import Depends, HTTPException
@@ -48,15 +49,22 @@ def create_ticket(db: Session, ticket: schemas.Ticket, current_user: schemas.Use
 
     user_id = user.id
 
-    ticket_dict = json.loads(ticket.model_dump_json())
+    datetime_obj = datetime.fromisoformat(
+        str(ticket.departure_date_time).replace('Z', '+00:00'))
+
+    formatted_datetime_str = datetime_obj.strftime('%Y-%m-%d %H:%M')
+
+    ticket.departure_date_time = formatted_datetime_str
+
+    ticket_dict = ticket.model_dump()
+    ticket_dict['passenger_id'] = user_id
 
     to_create = models.Ticket(**ticket_dict)
-
-    to_create.passenger_id = user_id
 
     db.add(to_create)
     db.commit()
     db.refresh(to_create)
+
     return to_create
 
 
