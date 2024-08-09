@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy to Droplet
         run: |
-          ssh -i ~/.ssh/id_rsa deployuser@207.154.253.148
+          ssh -v deployuser@207.154.253.148
           cd /apps
           source venv/bin/activate
           cd ap_repo/APbackend
