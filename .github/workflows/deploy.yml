@@ -29,5 +29,5 @@ jobs:
             git pull origin main
             pip install -r requirements.txt
             alembic upgrade head
-            sudo systemctl restart your_app_service_name
+            sudo systemctl restart ap
           EOF
