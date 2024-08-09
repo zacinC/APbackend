@@ -25,7 +25,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deployuser@207.154.253.148 << 'EOF'
             cd /apps
             source venv/bin/activate
-            cd ap_repo/APbackend
+            cd app_repo/APbackend
             git pull origin main
             pip install -r requirements.txt
             alembic upgrade head
