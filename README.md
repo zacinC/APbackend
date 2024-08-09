@@ -7,7 +7,7 @@
 🔑 JWT (JSON Web Token) authentication.<br/>
 📫 Email-based password recovery.<br/>
 
-Backend is live on [autobuskiprevozcg.xyz](https://autobuskiprevozcg.xyz/)
+Backend is live at [autobuskiprevozcg.xyz](https://autobuskiprevozcg.xyz/)
 
 There is also interactive documentation available at [autobuskiprevozcg.xyz/docs](https://autobuskiprevozcg.xyz/docs)
 
@@ -26,17 +26,19 @@ If you want to run this project locally then you need to create two files:<br/>
 Both are used for configuring our project's dependencies.
 
 ## settings.py
-ALGORITHM = "HS256"<br/>
-SECRET_KEY = "Generate a secret key to put here, you can do it with the command $ openssl rand -hex 32"<br/>
-ACCESS_TOKEN_EXPIRE_MINUTES = 30<br/>
-DATABASE = "name of the database"<br/>
-CLOUDINARY_API_SECRET = "cloudinary api secret"<br/>
-CLOUDINARY_API_KEY = "cloudinary api key"<br/>
-EMAIL_RESET_TOKEN_EXPIRE_MINUTES = 10<br/>
-BREVO_API_KEY = "Put your Brevo api key here"<br/>
-ENV = 'PRODUCTION'<br/>
-DOMAIN = 'Put the domain here'<br/>
-
+```bash
+ALGORITHM = "HS256"
+SECRET_KEY = "Generate a secret key to put here, you can do it with the command $ openssl rand -hex 32"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+DATABASE = "name of the database"
+CLOUDINARY_API_SECRET = "cloudinary api secret"
+CLOUDINARY_API_KEY = "cloudinary api key"
+EMAIL_RESET_TOKEN_EXPIRE_MINUTES = 10
+BREVO_API_KEY = "Put your Brevo api key here"
+ENV = 'PRODUCTION'
+DOMAIN = 'Put the domain here'
+```
+<br/>
 ## settings.json<br/>
 This file is only used for configuring the database<br/>
 {<br/>
@@ -49,8 +51,8 @@ This file is only used for configuring the database<br/>
 
 ## Running the project<br/>
 
-1. Create venv folder - $ python3 -m venv venv
-2. Install the dependencies - $ pip install -r requirements.txt
-3. Run it with $ uvicorn main:app --reload
+1. Create venv folder <br/> ```python3 -m venv venv```
+2. Install the dependencies <br/> ```pip install -r requirements.txt```
+3. Run it with<br/> ```uvicorn main:app --reload```
 
 # Enjoy 😃
