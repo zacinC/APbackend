@@ -27,7 +27,7 @@ jobs:
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         run: |
-          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no deployuser@207.154.253.148 << 'EOF'
+          ssh -i ~/.ssh/id_rsa deployuser@207.154.253.148 << 'EOF'
             cd /apps
             source venv/bin/activate
             cd ap_repo/APbackend
