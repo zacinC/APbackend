@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 import uvicorn
-from routers import user, role, route, city, country, station, ticket, news, login, company
+from routers import home, user, role, route, city, country, station, ticket, news, login, company
 from database import models
 from database.dbconfig import engine
 
@@ -73,6 +73,7 @@ def configure_routing():
     app.include_router(news.news_router)
     app.include_router(login.login_router)
     app.include_router(company.company_router)
+    app.include_router(home.home_router)
 
 
 if __name__ == '__main__':
