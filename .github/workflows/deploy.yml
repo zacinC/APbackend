@@ -15,14 +15,15 @@ jobs:
 
       - name: Set up SSH
         run: |
-          mkdir -p /home/runner/.ssh/id_rsa
-          echo "${{ secrets.APSSHKEY }}" > /home/runner/.ssh/id_rsa
-          chmod 600 /home/runner/.ssh/id_rsa
-          ssh-keyscan -H 207.154.253.148 >> /home/runner/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 207.154.253.148 >> ~/.ssh/known_hosts
+
 
       - name: Deploy to Droplet
         run: |
-          ssh -v deployuser@207.154.253.148
+          ssh -i ~/.ssh/id_rsa -v deployuser@207.154.253.148
           cd /apps
           source venv/bin/activate
           cd ap_repo/APbackend
