@@ -20,6 +20,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 207.154.253.148 >> ~/.ssh/known_hosts
 
+      - name: Add SSH Key to Agent
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add - <<< "${{ secrets.SSH_PASSWORD }}"
+
       - name: Deploy to Droplet
         run: |
           ssh -i ~/.ssh/id_rsa -v deployuser@207.154.253.148 << 'EOF'
