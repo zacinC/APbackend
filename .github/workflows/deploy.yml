@@ -20,19 +20,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 207.154.253.148 >> ~/.ssh/known_hosts
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
       - name: Deploy to Droplet
-        env:
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         run: |
-          ssh -i ~/.ssh/id_rsa deployuser@207.154.253.148 << 'EOF'
-            cd /apps
-            source venv/bin/activate
-            cd ap_repo/APbackend
-            git pull origin main
-            pip install -r requirements.txt
-            alembic upgrade head
-            sudo systemctl restart your_app_service_name
-          EOF
+          ssh -i ~/.ssh/id_rsa deployuser@207.154.253.148
+          cd /apps
+          source venv/bin/activate
+          cd ap_repo/APbackend
+          git pull origin main
+          pip install -r requirements.txt
+          alembic upgrade head
+          sudo systemctl restart your_app_service_name
+          
