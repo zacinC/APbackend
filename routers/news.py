@@ -34,7 +34,7 @@ def get_all_news_filtered(page_number: int, search: str, db: Session = Depends(g
 
 
 @news_router.post("/news", response_model=schemas.News, tags=["news"])
-def add(current_user: Annotated[schemas.User, Depends(get_current_admin_user)], notif: schemas.NewsCreate, db: Session = Depends(get_db)):
+def add(notif: schemas.NewsCreate, db: Session = Depends(get_db)):
     return upload_news(db=db, notif=notif)
 
 

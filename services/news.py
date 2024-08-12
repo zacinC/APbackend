@@ -1,3 +1,4 @@
+from io import BytesIO
 import json
 from math import ceil
 from pathlib import Path
@@ -59,14 +60,14 @@ def get_news_filtered_count(db: Session, search: str):
     return ceil(len(news) / 10)
 
 
-def upload_news(db: Session, notif: schemas.NewsCreate):
+async def upload_news(db: Session, notif: schemas.NewsCreate):
 
 
     upload_result_url = None
 
     if notif.image:
-        img = notif.image
-        upload_result = cloudinary.uploader.upload(img)
+        img_bytes = BytesIO(await notif.image.read()) 
+        upload_result = cloudinary.uploader.upload(img_bytes)
         upload_result_url = upload_result['url']
 
     to_create = models.News(
@@ -124,6 +125,8 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
 
     if notif.image:
         img = notif.image
+        upload_result_url = None
+    if(img):
         upload_result = cloudinary.uploader.upload(img)
         upload_result_url = upload_result['url']
 
