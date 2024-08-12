@@ -1,6 +1,5 @@
 from decimal import Decimal
 import uuid
-from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime, time
@@ -14,7 +13,7 @@ class NewsBase(BaseModel):
     content: str
     is_active: bool = True
     created_date: datetime = datetime.now()
-    image: Optional[UploadFile] = File(None)
+    image: Optional[str] = None
 
 
 class NewsCreate(NewsBase):
