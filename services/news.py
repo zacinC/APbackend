@@ -13,7 +13,7 @@ from cloudinary.utils import cloudinary_url
 from slugify import slugify
 import datetime
 from schemas import schemas
-from settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET,PATH
 from sqlalchemy import or_
 from sqlalchemy import func
 from sqlalchemy import desc
@@ -29,7 +29,7 @@ cloudinary.config(
     secure=True
 )
 
-TEMP_DIR = "C:/Users/USER/Desktop/Autobuska/AutobuskeBackend/images"
+TEMP_DIR = PATH
 
 
 def extract_public_id(image_url: str) -> str:
