@@ -1,7 +1,9 @@
 import json
 from math import ceil
+import os
 from pathlib import Path
-from fastapi import HTTPException
+from typing import Optional
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from database import models
 import cloudinary.uploader
@@ -15,6 +17,9 @@ from settings import CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 from sqlalchemy import or_
 from sqlalchemy import func
 from sqlalchemy import desc
+from pathlib import Path
+import shutil
+
 
 
 cloudinary.config(
@@ -23,6 +28,8 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET,
     secure=True
 )
+
+TEMP_DIR = "C:/Users/USER/Desktop/Autobuska/AutobuskeBackend/images"
 
 
 def extract_public_id(image_url: str) -> str:
@@ -63,11 +70,6 @@ def upload_news(db: Session, notif: schemas.NewsCreate):
 
 
     upload_result_url = None
-
-    if notif.image:
-        img = notif.image
-        upload_result = cloudinary.uploader.upload(img)
-        upload_result_url = upload_result['url']
 
     to_create = models.News(
         title=notif.title,
@@ -112,13 +114,6 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     if not to_update:
         raise HTTPException(status_code=404, detail="Not found!")
 
-    image_url = to_update.image
-
-    if (image_url):
-        public_id = extract_public_id(image_url)
-
-
-        cloudinary.uploader.destroy(public_id)
 
     upload_result_url = None
 
@@ -138,3 +133,33 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     db.refresh(to_update)
 
     return to_update
+
+def upload_img_id(id:int,db:Session,image:Optional[UploadFile]):
+    to_update = db.query(models.News).filter(models.News.id == id).first()
+    upload_result_url = None
+    if not to_update:
+        raise HTTPException(status_code=404, detail="Not found!")
+    
+    if to_update.image:
+        image_url = to_update.image
+        public_id = extract_public_id(image_url)
+
+        cloudinary.uploader.destroy(public_id)
+
+
+    if image:
+        temp_file_path = Path(TEMP_DIR + "/" + image.filename)
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+
+        try:
+            result = cloudinary.uploader.upload(str(temp_file_path))
+            upload_result_url = result.get("secure_url")
+        finally:
+            if temp_file_path.exists():
+                os.remove(temp_file_path)
+
+        to_update.image = upload_result_url
+    
+    return to_update
+            

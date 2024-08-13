@@ -1,5 +1,6 @@
 from decimal import Decimal
 import uuid
+from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime, time
@@ -23,6 +24,8 @@ class NewsCreate(NewsBase):
 class News(NewsBase):
     id: int
     slug: str
+    
+
 
     class Config:
         orm_mode: True
