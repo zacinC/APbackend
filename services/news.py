@@ -159,7 +159,7 @@ def upload_img_id(id:int,db:Session,image:Optional[UploadFile]):
             if temp_file_path.exists():
                 os.remove(temp_file_path)
 
-        to_update.image = upload_result_url
+    to_update.image = upload_result_url
     
     return to_update
             
