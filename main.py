@@ -16,7 +16,7 @@ app = FastAPI()
 
 
 origins = [
-    "http://localhost:3000",
+    "http://localhost:5173",
     "https://apcg-nine.vercel.app",
     "https://apcg.vercel.app",
     "https://autobuskiprevozcg.xyz"
