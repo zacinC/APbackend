@@ -114,20 +114,11 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     if not to_update:
         raise HTTPException(status_code=404, detail="Not found!")
 
-
-    upload_result_url = None
-
-    if notif.image:
-        img = notif.image
-        upload_result = cloudinary.uploader.upload(img)
-        upload_result_url = upload_result['url']
-
     to_update.content = notif.content
     to_update.title = notif.title
     to_update.created_date = to_update.created_date
     to_slug = f"{notif.title}-{id}"
     to_update.slug = slugify(to_slug)
-    to_update.image = upload_result_url
 
     db.commit()
     db.refresh(to_update)
@@ -135,16 +126,15 @@ def update(db: Session, id: int, notif: schemas.NewsCreate):
     return to_update
 
 def upload_img_id(id:int,db:Session,image:Optional[UploadFile]):
-    print(id,image.filename)
     to_update = db.query(models.News).filter(models.News.id == id).first()
     upload_result_url = None
     if not to_update:
         raise HTTPException(status_code=404, detail="Not found!")
     
+    
     if to_update.image:
         image_url = to_update.image
         public_id = extract_public_id(image_url)
-
         cloudinary.uploader.destroy(public_id)
 
 
@@ -156,7 +146,6 @@ def upload_img_id(id:int,db:Session,image:Optional[UploadFile]):
 
         try:
             result = cloudinary.uploader.upload(str(temp_file_path))
-            print(result)
             upload_result_url = result.get("secure_url")
         finally:
             if temp_file_path.exists():
